@@ -1,0 +1,9 @@
+# Ignore Mac DS_Store files and other known temporary files
+.DS_Store
+.ndi
+*.ndi
+*.tmp
+*.swp
+*.asv
+*.m~
+__pycache__
