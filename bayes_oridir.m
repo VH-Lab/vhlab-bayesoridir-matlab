@@ -21,6 +21,8 @@ function [out] = bayes_oridir(angles, responses, varargin)
 
   
   
+
+  
 p_rp = sum(sum(sum(lik,4),3),2);
 p_rp = p_rp/sum(p_rp);
 p_rn = sum(sum(sum(lik,4),3),1);
