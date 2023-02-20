@@ -18,7 +18,7 @@ function [out] = bayes_oridir(angles, responses, varargin)
 %  LIKELIHOOD - Joint posterior likelihood (RSP, RP, RN, OP, SIG)
 
 
-
+vrp = linspace(0,100,50);
   
   
 
@@ -33,6 +33,6 @@ p_sig = squeeze(sum(sum(sum(lik,3),2),1));
 p_sig = p_sig/sum(p_sig);
 
 out.p_rp = p_rp;
-out.r_rn = p_rn;
+out.p_rn = p_rn;
  % . . 
    
