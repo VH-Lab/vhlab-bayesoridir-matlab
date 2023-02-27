@@ -1,0 +1,19 @@
+function out = bayes_grid_function(data)
+
+% build 71 x 180 x 71 x 61 grids
+out.RP = 85:155;
+out.OP = 1:180;
+out.RN = 25:95;
+out.SIG = 40:100;
+out.lik = zeros(length(out.RP),length(out.OP),length(out.RN),length(out.SIG));
+ang = 1:360;
+for i = 1:length(out.RP)
+    for j = 1:length(out.OP)
+        for k = 1:length(out.RN)  
+            for h = 1:length(out.SIG)   
+                vrsp = out.RP(i) * exp(-0.5*(ang-out.OP(j)).^2/out.SIG(h)^2) + out.RN(k) * exp(-0.5*(ang-(out.OP(j)+180)).^2/out.SIG(h)^2);
+                out.lik(i,j,k,h) = exp(-0.5*sum((data - vrsp).^2)/5.^2);
+            end
+        end 
+    end
+end
