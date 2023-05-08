@@ -1,4 +1,4 @@
-function plot_bayes_oridir(bayes_structure);
+function plot_bayes_oridir(bayes_structure)
 
 plot(bayes_structure.vrp,bayes_structure.p_rp,'b');
 

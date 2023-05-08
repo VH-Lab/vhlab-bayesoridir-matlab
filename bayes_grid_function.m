@@ -1,12 +1,12 @@
-function out = bayes_grid_function(data)
+function out = bayes_grid_function(data,interval)
 out.data_mean = mean(data,1);
-% build 71 x 180 x 71 x 61 grids
+% build 71 x 360 x 71 x 61 grids
 out.RP = 85:155;
 out.OP = 0:359;
 out.RN = 25:95;
 out.SIG = 40:100;
 out.lik = zeros(length(out.RP),length(out.OP),length(out.RN),length(out.SIG));
-ang = 0:359;
+ang = 0:interval:359;
 %S = median(std(ang,1));
 for i = 1:length(out.RP)
     for j = 1:length(out.OP)
@@ -18,3 +18,6 @@ for i = 1:length(out.RP)
         end 
     end
 end
+out.lik = out.lik/sum(out.lik,"all");
+[MaxLik,MaxLikIndex] = max(out.lik,[],"all");
+[i,j,k,h] = ind2sub(size(out.lik),MaxLikIndex);
