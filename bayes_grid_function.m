@@ -1,23 +1,35 @@
-function out = bayes_grid_function(data,interval)
-out.data_mean = mean(data,1);
-% build 71 x 360 x 71 x 61 grids
-out.RP = 85:155;
-out.OP = 0:359;
-out.RN = 25:95;
-out.SIG = 40:100;
-out.lik = zeros(length(out.RP),length(out.OP),length(out.RN),length(out.SIG));
-ang = 0:interval:359;
-%S = median(std(ang,1));
-for i = 1:length(out.RP)
-    for j = 1:length(out.OP)
-        for k = 1:length(out.RN)  
-            for h = 1:length(out.SIG)   
-                vrsp = out.RP(i) * exp(-0.5*(ang-out.OP(j)).^2/out.SIG(h)^2) + out.RN(k) * exp(-0.5*(ang-(out.OP(j)+180)).^2/out.SIG(h)^2);
-                out.lik(i,j,k,h) = exp(-0.5*sum((out.data_mean - vrsp).^2)/5.^2);
+function [RP,OP,RN,SIG,lik] = bayes_grid_function(stimulus_value,ang)
+% out.data_mean = mean(data,1);
+% build bayes grid matrix
+RP = 0:150;
+OP = 0:5:359;
+RN = 0:150; 
+SIG = 0:50;
+Noise_SIG = 0:15;
+lik = cell(length(Noise_SIG),1);
+for n = 1:length(Noise_SIG)
+lik{n} = zeros(length(RP),length(OP),length(RN),length(SIG));
+end
+% get 5 parameters' posterior probability
+for i = 1:length(RP)
+    for j = 1:length(OP)
+        for k = 1:length(RN)  
+            for h = 1:length(SIG)
+                vrsp = RP(i) * exp(-0.5*angdiff(ang-OP(j)).^2/SIG(h)^2) + RN(k) * exp(-0.5*angdiff(ang-(OP(j)+180)).^2/SIG(h)^2);
+                for n = 1:length(Noise_SIG)
+                    prsp = normpdf(vrsp-stimulus_value,0,Noise_SIG(n));
+                    lik{n}(i,j,k,h) = prod(prsp);
+                end
             end
         end 
     end
 end
-out.lik = out.lik/sum(out.lik,"all");
-[MaxLik,MaxLikIndex] = max(out.lik,[],"all");
-[i,j,k,h] = ind2sub(size(out.lik),MaxLikIndex);
+% TotalLik=[0];
+% for n = 1:length(Noise_SIG)
+% TotalLik = TotalLik + sum(lik{n},'all');
+% end;
+% for n = 1:length(Noise_SIG)
+%     lik{n} = lik{n}./TotalLik;
+% end
+%normalized liklihood function
+

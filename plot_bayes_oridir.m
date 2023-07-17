@@ -1,19 +1,33 @@
-function plot_bayes_oridir(bayes_structure)
+function out = plot_bayes_oridir(lik) 
 
-plot(bayes_structure.vrp,bayes_structure.p_rp,'b');
+[M,I] = max(lik,[],'all'); % get maximum liklihood of parameters value and get the index of parameters
+[i,j,k,h] = ind2sub(size(lik),I);
 
-plot(vrp-20,p_rp,'b'),
-xlabel("Rpref(Hz)"),
+p_rp =sum(sum(sum(lik,4),3),2);
+p_rp = p_rp/sum(p_rp);
+p_ang = squeeze(sum(sum(sum(lik,4),3),1));
+p_ang = p_ang/sum(p_ang);
+p_rn = squeeze(sum(sum(sum(lik,4),2),1)); 
+p_rn = p_rn/sum(p_rn);
+p_sig = squeeze(sum(sum(sum(lik,3),2),1));
+p_sig = p_sig/sum(p_sig);
+
+plot((85:155)-20,p_rp,'b'),% Rp - offset = 120-20 = 100
+xlabel("Rpref(Hz)"), 
 ylabel("probability of Rpref"),
+xlim([90 110])
 
-plot(vrn-20,p_rn,'b'),
+plot((25:95)-20,p_rn,'b'),% Rn - offset = 60 - 20 = 40
 xlabel("Rnull(Hz)"),
 ylabel("probability of Rnull"),
+xlim([30 50])
 
-plot(vang,p_ang,'b'),
+plot(0:359,p_ang,'b'),
 xlabel("θpref"),
 ylabel("probability of θpref"),
+xlim([80 100])
 
-plot(vsig,p_sig,'b'),
+plot(40:100,p_sig,'b'),
 xlabel("σ"),
-ylabel("probability of Rpref"),
+ylabel("probability of σ"),
+xlim([60 80])
