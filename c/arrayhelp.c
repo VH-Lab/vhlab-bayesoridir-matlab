@@ -2,7 +2,10 @@
 #include <float.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <errno.h>
 #include "arrayhelp.h"
+#include "filehelp.h"
 
 /* linspace - generates a linearly spaced array of numbers between two limits
 
@@ -19,7 +22,6 @@
    Example: 
 */
 
-
 double * linspace(double x0, double x1, int n) {
 	int i;
 	double *linspacearray = malloc(sizeof(double)*n);
@@ -28,7 +30,7 @@ double * linspace(double x0, double x1, int n) {
 	if (n>1) steps = n-1;
 
 	if (linspacearray != NULL) {
-		for (i=0; i<(steps-1); i++) {
+		for (i=0; i<steps; i++) {
 			linspacearray[i] = x0 + i*(x1-x0)/((double)steps);
 		}
 		/* make the last one exactly right, no round-off */
@@ -102,6 +104,67 @@ void printdoublearray(double printarray[], int length) {
 	for (i=0;i<length;i++) {
 		printf("%f ",printarray[i]);
 	}
+}
+
+named_array named_array_create(char name[], double array_values[], int array_length) {
+	named_array new_array;
+	int i;
+
+	strcpy(new_array.name,name);
+	new_array.array_length = array_length;
+	new_array.array_values = (double*)malloc(array_length*sizeof(double));
+	if (new_array.array_values != NULL) {
+		for (i=0;i<array_length;i++) {
+			new_array.array_values[i] = array_values[i];
+		}
+	} else {
+		printf("Error making new array.\n");
+		exit(EXIT_FAILURE);
+	}
+	return(new_array);
+}
+
+void named_array_delete(named_array *todelete_array) {
+	if ((*todelete_array).array_values != NULL) {
+		free((*todelete_array).array_values);
+		(*todelete_array).array_values = NULL;
+		(*todelete_array).array_length = 0;
+		strcpy((*todelete_array).name,"\n");
+	}
+}
+
+int named_array_fwrite(FILE *stream, named_array *to_write) {
+	int output;
+	size_t countsize;
+
+	output = fprintf(stream, "%s\n%d\n", (*to_write).name, (*to_write).array_length);
+
+	if (output==0) {
+		lendian_fwrite(((*to_write).array_values), sizeof(double), (*to_write).array_length, stream);
+	}
+
+	return(output);
+}
+
+
+int named_array_fread(FILE *stream, named_array *to_read) {
+	char name[255];
+	int array_length;
+	double *data;
+	int output;
+	size_t countsize;
+
+	fscanf(stream, "%s\n%d\n", name, &array_length);
+
+	data = malloc(sizeof(double)*array_length);
+
+	lendian_fread(data, sizeof(double), array_length, stream);
+
+	strcpy((*to_read).name,name);
+	(*to_read).array_length = array_length;
+	(*to_read).array_values = data;
+
+	return(0);
 }
 
 
