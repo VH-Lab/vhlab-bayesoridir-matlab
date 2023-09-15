@@ -18,8 +18,8 @@ c.Rp = 10;
 c.Rn = 9;
 c.theta_pref = 45;
 c.sigma = 30;
-c.noise_offset = 0.4;
-c.noise_slope = 0.4;
+c.noise_offset = 0.25;
+c.noise_slope = 0.73;
 
 c.data.angles = [ 0:30:360-30]';
 c.data.num_trials = 5*ones(size(c.data.angles));
@@ -36,3 +36,10 @@ grid = struct('Rp',logspace(log10(.5),log10(150),100), ...
 
 [output_struct,lik] = vis.bayes.double_gaussian.grid_proportional_noise(grid,c.data,[c.noise_offset c.noise_slope]);
 
+figure;
+plot(c.data.angles,c.data.mean_responses);
+ylabel('Response');
+xlabel('Angle')
+
+figure;
+vis.bayes.double_gaussian.plot(output_struct);

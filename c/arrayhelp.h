@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <float.h>
+#include <stdio.h>
 
 struct named_array {
         char name[255];
