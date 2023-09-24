@@ -14,7 +14,8 @@ function [output_struct,Lik] = grid_proportional_noise(grid_size,data,noise_mdl,
 %      Rsp - the values of Rsp 
 %      Rp - the values of Rp to examine
 %      Alpha - the values of Rn (equal to Rp * Alpha)
-%      Sig - the values of sigma
+%      Sig - the values of sigma'\
+%      
 %   DATA : a structure with fields:
 %      angles - the angles that were used for stimulation
 %      responses - the mean responses to each stimulus
@@ -121,9 +122,15 @@ DCV = dir_cv_value(rp,op,alpha,sig,rsp);
 CV = ori_cv_value(rp,op,alpha,sig,rsp);
 
 
-di_bins = 0:0.05:1.05;
+
+di_bins = 0:0.05:1.0;
+oi_bins = 0:0.05:1.0;
+dir_cv_bins = 0:0.05:1.0;
+cv_bins = 0:0.05:1.0;
+
+
+
 di_lik = 0 * di_bins;
-oi_bins = 0:0.05:1.05;
 oi_lik = 0 * oi_bins;
 
 
@@ -143,9 +150,7 @@ end
 oi_lik = oi_lik./sum(oi_lik);
 
 
-dir_cv_bins = 0:0.05:1.05;
 dcv_lik = 0 * dir_cv_bins;
-cv_bins = 0:0.05:1.05;
 cv_lik = 0 * cv_bins;
 
 
