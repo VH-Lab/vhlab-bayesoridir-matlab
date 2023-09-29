@@ -96,17 +96,17 @@ end
 
 Lik = Lik./sum(Lik(:));
 
-%extract and normalize the liklihood curve of each parameter
+%extract the liklihood curve of each parameter
 lik_Rp = squeeze(sum(sum(sum(sum(Lik,5),4),3),2));
-lik_Rp = lik_Rp./sum(lik_Rp,"all");
+%lik_Rp = lik_Rp./sum(lik_Rp,"all");
 lik_theta_pref = squeeze(sum(sum(sum(sum(Lik,5),4),3),1))';
-lik_theta_pref = lik_theta_pref./sum(lik_theta_pref,"all");
+%lik_theta_pref = lik_theta_pref./sum(lik_theta_pref,"all");
 lik_Alpha = squeeze(sum(sum(sum(sum(Lik,5),4),2),1));
-lik_Alpha = lik_Alpha./sum(lik_Alpha,"all");
+%lik_Alpha = lik_Alpha./sum(lik_Alpha,"all");
 lik_sigma = squeeze(sum(sum(sum(sum(Lik,5),3),2),1));
-lik_sigma = lik_sigma./sum(lik_sigma,"all");
+%lik_sigma = lik_sigma./sum(lik_sigma,"all");
 lik_rsp = squeeze(sum(sum(sum(sum(Lik,4),3),2),1));
-lik_rsp = lik_rsp./sum(lik_rsp,"all");
+%lik_rsp = lik_rsp./sum(lik_rsp,"all");
 
 
 [M,ind] = max(Lik,[],'all');
