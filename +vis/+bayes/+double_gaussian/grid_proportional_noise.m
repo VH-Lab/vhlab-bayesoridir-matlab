@@ -69,7 +69,7 @@ for rp = 1:length(grid_size.Rp)
                     % di_denominator = Resp(theta_pref)
                     %       = Rsp + Rp + Alpha*Rp*E
                     di_denominator = grid_size.Rsp(rsp)+grid_size.Rp(rp)*(1+grid_size.Alpha(alpha)*E);
-                    di(rp,op,alpha,sig,rsp) = max(di_numerator/di_denominator,1);
+                    di(rp,op,alpha,sig,rsp) = max(0,min(di_numerator/di_denominator,1));
 
                     %orientation index
                     % oi_numerator = Resp(theta_pref)+Resp(theta_pref_180)-(Resp(theta_pref-90)+Resp(theta_pref-90))
@@ -79,7 +79,7 @@ for rp = 1:length(grid_size.Rp)
                     oi_numerator = grid_size.Rp(rp) * (1+grid_size.Alpha(alpha)*E+grid_size.Alpha(alpha)+E - 2*E2 -2*grid_size.Alpha(alpha)*E2);
                     % oi_denominator = (Resp(theta_pref) + Resp(theta_pref_180)
                     oi_denominator = 2*grid_size.Rsp(rsp) + grid_size.Rp(rp) * (1+grid_size.Alpha(alpha)*E+grid_size.Alpha(alpha)+E);
-                    oi(rp,op,alpha,sig,rsp) = max(oi_numerator/oi_denominator,1);
+                    oi(rp,op,alpha,sig,rsp) = max(0,min(oi_numerator/oi_denominator,1));
                     
                     %circular variance and direction circular variance
                     dir_vector = abs(sum(vrsp(:).*exp(sqrt(-1)*data.angles*pi/180))/sum(vrsp));
