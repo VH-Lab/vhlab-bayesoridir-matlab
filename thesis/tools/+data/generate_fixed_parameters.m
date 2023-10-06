@@ -13,7 +13,11 @@ function [parameters_structure] = generate_fixed_parameters(Rpref,Rnull,Theta_pr
 %           PARAMETERS_STRUCTURE.ALPHA - calculate the coefficient of Rpref and Rnull (Rnull/Rpref)
 
 parameters_structure.rpref = Rpref;
+if Rpref == 0
+    parameters_structure.alpha = 0;
+else
 parameters_structure.alpha = Rnull/Rpref;
+end
 parameters_structure.theta_pref = Theta_pref;
 parameters_structure.sigma = Sigma;
 parameters_structure.response = Response;

@@ -1,11 +1,20 @@
 function [output_struct,Lik] = bayes_grid_function_proportional_noise(grid_size,data,noise_mdl)
+%   DESCRIPTION:
+%
+%   Inputs: GRID_SIZE - 
+%           DATA - 
+%           NOISE_MDL - 
+%
+%   Outputs:OUTPUT_STRUCT - 
+%           LIK - 
+%
 % extract coefficients from noise linear regression model
 offset = noise_mdl(1);
 slope = noise_mdl(2);
 % build bayes grid matrix
 Lik = zeros(length(grid_size.Rp),length(grid_size.Op),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp));
 di = zeros(length(grid_size.Rp),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp));
-oi = zeros(length(grid_size.Sig),1);
+oi = zeros(length(grid_size.Rp),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp));
 ori_cv_value = zeros(length(grid_size.Rp),length(grid_size.Op),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp));
 dir_cv_value = zeros(length(grid_size.Rp),length(grid_size.Op),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp));
 % get 5 parameters' posterior probability(liklihood)
@@ -22,7 +31,7 @@ for rp = 1:length(grid_size.Rp)
                     %direction index
                     di(rp,alpha,sig,rsp) = (1-grid_size.Alpha(alpha)) * (1-exp(-0.5*180^2./grid_size.Sig(sig)^2))./(grid_size.Rsp(rsp)./grid_size.Rp(rp) + 1 + grid_size.Alpha(alpha)*exp(-0.5*180^2./grid_size.Sig(sig)^2));
                     %orientation index
-                    oi(sig) = 1 - 2./(exp(0.5*90^2./grid_size.Sig(sig)^2)+exp(-1.5*90^2./grid_size.Sig(sig)^2));
+                    oi(rp,alpha,sig,rsp) = 1 - (2*grid_size.Rsp(rsp) + 2*grid_size.Rp(rp)*(1+grid_size.Alpha(alpha))*exp(-0.5*90^2/grid_size.Sig(sig)^2))./(2*grid_size.Rsp(rsp) + grid_size.Rp(rp)*(1+grid_size.Alpha(alpha))*(1 + exp(-0.5*90^2/grid_size.Sig(sig)^2)));
                     %circular variance and direction circular variance
                     dir_angle = (0:359)';
                     ori_angle = [0:179,0:179]';
@@ -51,17 +60,17 @@ lik_sigma = lik_sigma./sum(lik_sigma,"all");
 lik_rsp = squeeze(sum(sum(sum(sum(Lik,4),3),2),1));
 lik_rsp = lik_rsp./sum(lik_rsp,"all");
 [M,ind] = max(Lik,[],'all');
-M = squeeze(M);
 ind = squeeze(ind);
 [rp,op,alpha,sig,rsp] = ind2sub(size(Lik),ind);
 ang = (0:359)';
 fitting_rsp_v = grid_size.Rsp(rsp) + grid_size.Rp(rp) .* exp(-0.5*angdiff(ang-grid_size.Op(op)).^2./grid_size.Sig(sig).^2) + grid_size.Alpha(alpha) .* grid_size.Rp(rp) .* exp(-0.5*angdiff(ang-grid_size.Op(op)+180).^2./grid_size.Sig(sig).^2);
 %descriptors values in maximum likelihood condition
 DI = di(rp,alpha,sig,rsp);
-OI = oi(sig);
+OI = oi(rp,alpha,sig,rsp);
 DCV = dir_cv_value(rp,op,alpha,sig,rsp);
 CV = ori_cv_value(rp,op,alpha,sig,rsp);
 di_lik = squeeze(sum(Lik,2));
+oi_lik = squeeze(sum(Lik,2));
 %circular variance histogram
 [dcv_index] = discretize(dir_cv_value(:),0:0.05:1);
 for bin = 1:max(dcv_index)
@@ -83,15 +92,15 @@ output_struct = struct( ...
     'marginal_likelihood',struct( ...
         'theta_pref',struct('values',grid_size.Op,'likelihoods',lik_theta_pref), ...
         'Rp',struct('values',grid_size.Rp,'likelihoods',lik_Rp), ...
-        'Rn',struct('values',grid_size.Alpha,'likelihoods',lik_Alpha), ...
+        'Alpha',struct('values',grid_size.Alpha,'likelihoods',lik_Alpha), ...
         'sigma',struct('values',grid_size.Sig,'likelihoods',lik_sigma), ...
         'Rsp',struct('values',grid_size.Rsp,'likelihoods',lik_rsp)), ... 
     'maximum_likelihood',struct( ...
-        'parameters',struct('theta_pref',grid_size.Op(op),'Rp',grid_size.Rp(rp),'Rn',grid_size.Alpha(alpha),'sigma',grid_size.Sig(sig),'Rsp',grid_size.Rsp(rsp),'tunning_curve',fitting_rsp_v), ...
+        'parameters',struct('theta_pref',grid_size.Op(op),'Rp',grid_size.Rp(rp),'Rn',grid_size.Alpha(alpha)*grid_size.Rp(rp),'sigma',grid_size.Sig(sig),'Rsp',grid_size.Rsp(rsp),'tunning_curve',fitting_rsp_v), ...
         'descriptors',struct('di',DI,'oi',OI,'cv',CV,'dir_cv',DCV)), ...
     'descriptors',struct( ...
         'di',struct('values',di,'likelihoods',di_lik), ...
-        'oi',struct('values',oi,'likelihoods',lik_sigma), ...
+        'oi',struct('values',oi,'likelihoods',oi_lik), ...
         'cv',struct('values',ori_cv_value,'likelihoods',ori_lik), ...
         'dir_cv',struct('values',dir_cv_value,'likelihoods',dcv_lik)));
 end
