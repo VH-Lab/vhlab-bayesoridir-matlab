@@ -27,5 +27,7 @@ int named_array_fwrite(FILE *stream, named_array *to_write);
 
 int named_array_fread(FILE *stream, named_array *to_read);
 
+int named_array_h5read(const char *filename, const char *datapath, named_array *to_read);
+
 #endif // ARRAYHELP_H
 

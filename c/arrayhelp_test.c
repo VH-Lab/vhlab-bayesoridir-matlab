@@ -4,13 +4,15 @@
 
 int main() {
 
+	int status;
+
 	double *y1_1 = linspace(1,10,10);
 	double *y1_2 = linspace(0.5,0.8,10);
 
 	double *y2_1 = logspace(-2,1,10,10);
 	double *y2_2 = logspace(-4,1,10,10);
 
-	named_array na1;
+	named_array na1, na2;
 
 	printf("Should be 1..10 in steps of 1.\n");
 	printdoublearray(y1_1,10);
@@ -42,5 +44,13 @@ int main() {
 
 	named_array_delete(&na1);
 
+	status = named_array_h5read("myfile.h5","/myDataset1/arrayName", &na2);
+
+	printf("The array name is %s.\n", na2.name);
+	printdoublearray(na2.array_values,na2.array_length);
+	printf("\n");
+	printf("\n");
+
+	named_array_delete(&na2);
 }
 

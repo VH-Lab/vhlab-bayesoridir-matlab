@@ -6,6 +6,8 @@
 #include <errno.h>
 #include "arrayhelp.h"
 #include "filehelp.h"
+#include <hdf5.h>
+#include <hdf5_hl.h>
 
 /* linspace - generates a linearly spaced array of numbers between two limits
 
@@ -165,6 +167,114 @@ int named_array_fread(FILE *stream, named_array *to_read) {
 	(*to_read).array_values = data;
 
 	return(0);
+}
+
+/* named_array_h5read - read an HDF5 array into a named array
+
+   Inputs:
+	const char *filename - The HDF5 file name
+	const char *datapath - The data path to be read
+	named_array *to_read - The new named_array that is read
+
+   Output:
+	status (always 0)
+
+   This function opens a dataset in an HDF5 file. The dataset must be a 1xN or Mx1
+   array of doubles. A named array with the name of the array (the dataset path is trimmed off)
+   is created.
+
+   Examples:
+
+   // if you have a dataset called "/myDataset1/arrayName" in file "myfile.h5"
+   named_array na2;
+   int status;
+   status = named_array_h5read("myfile.h5","/myDataset1/arrayName", &na2);
+*/ 
+
+
+int named_array_h5read(const char *filename, const char *datapath, named_array *to_read) {
+	int status = 0;
+	char name[255];
+	char h5pathsep = '/';
+	int i, j, lastSep;
+
+	hid_t       file, dataset;         /* handles */
+	hid_t       datatype, filespace;   
+	hid_t       memspace; 
+	H5T_class_t class;                 /* datatype class */
+	H5T_order_t order;                 /* data order */
+	size_t      size;                  
+	hsize_t elements_bufsize;
+	double *elements;
+
+	hsize_t     dims[2];                     /* dataset and chunk dimensions*/ 
+	herr_t      status_n, out_status;
+	int rank, ctr;
+
+	for (i=0;i<strlen(datapath);i++) { 
+		if (h5pathsep==datapath[i]) {
+			lastSep = i;
+		}
+	}
+	for (i=lastSep+1;i<strlen(datapath);i++) {
+		name[i - (lastSep+1)] = datapath[i];
+	}
+	for (i=strlen(datapath) - (lastSep+1);i<255;i++) {
+		name[i] = (char)0;
+	}
+
+	//printf("name is %s.\n", name);
+
+	//printf("About to open file %s with dataset %s\n", filename, datapath);
+
+	file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
+	dataset = H5Dopen1(file, datapath);
+
+	datatype  = H5Dget_type(dataset);     // datatype handle
+	class     = H5Tget_class(datatype);
+	order     = H5Tget_order(datatype);
+	//if (order == H5T_ORDER_LE) printf("Little endian order \n");
+	H5Tclose(datatype);
+
+	elements_bufsize = H5Dget_storage_size(dataset);
+	//printf("Datasize: %llu\n", elements_bufsize);
+	elements = (double *) malloc(elements_bufsize);
+
+	filespace = H5Dget_space(dataset);    /* Get filespace handle first. */
+	rank      = H5Sget_simple_extent_ndims(filespace);
+	status_n  = H5Sget_simple_extent_dims(filespace, dims, NULL);
+	/*printf("dataset rank %d, dimensions %lu x %lu\n",
+	   rank, (unsigned long)(dims[0]), (unsigned long)(dims[1]));*/
+
+	memspace = H5Screate_simple(rank,dims,NULL);
+ 
+	/*
+	* Read dataset back and display.
+	*/
+	out_status = H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace, filespace,
+		     H5P_DEFAULT, elements);
+
+	H5Sclose(filespace);
+	H5Sclose(memspace);
+	H5Dclose(dataset);
+	H5Fclose(file);
+
+        strcpy((*to_read).name,name);
+        (*to_read).array_length = dims[0]*dims[1];
+        (*to_read).array_values = elements;
+
+	/* for testing
+	ctr = 0;
+	for (i=0;i<dims[0];i++) {
+		for (j=0;j<dims[1];j++) {
+			printf("%f ", elements[ctr]);
+			ctr = ctr + 1;
+		}
+		printf("\n");
+	}
+	*/
+
+	return(status);
 }
 
 
