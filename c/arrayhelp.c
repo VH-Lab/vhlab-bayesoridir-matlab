@@ -277,4 +277,54 @@ int named_array_h5read(const char *filename, const char *datapath, named_array *
 	return(status);
 }
 
+int named_array_h5write(const char *filename, const char *datapath, named_array *to_read) {
+	int status = 0;
+
+
+
+
+
+
+
+
+	return(status);
+}
+
+
+
+ /* thanks to Bard for this one, well mostly Bard */
+
+int write_double_array_to_hdf5(const double *array, size_t n_rows, size_t n_cols, const char *filename, const char *dataset_name) {
+  // Open the HDF5 file for writing.
+  hid_t file_id = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  if (file_id == H5I_INVALID_HID) {
+    fprintf(stderr, "Error creating HDF5 file: %s\n", filename);
+    return(1);
+  }
+
+  // Create the HDF5 dataset.
+  hsize_t dims[] = {n_rows, n_cols};
+  hid_t dataset_id = H5Dcreate(file_id, dataset_name, H5T_NATIVE_DOUBLE, H5Screate_simple(2, dims, NULL), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+  if (dataset_id == H5I_INVALID_HID) {
+    fprintf(stderr, "Error creating HDF5 dataset: %s\n", dataset_name);
+    H5Fclose(file_id);
+    return(1);
+  }
+
+  // Write the double array to the HDF5 dataset.
+  herr_t status = H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, array);
+  if (status < 0) {
+    fprintf(stderr, "Error writing double array to HDF5 dataset: %s\n", dataset_name);
+    H5Dclose(dataset_id);
+    H5Fclose(file_id);
+    return(1);
+  }
+
+  // Close the HDF5 dataset and file.
+  H5Dclose(dataset_id);
+  H5Fclose(file_id);
+  return(0);
+}
+
 

@@ -29,5 +29,8 @@ int named_array_fread(FILE *stream, named_array *to_read);
 
 int named_array_h5read(const char *filename, const char *datapath, named_array *to_read);
 
+int write_double_array_to_hdf5(const double *array, size_t n_rows, size_t n_cols, const char *filename, const char *dataset_name);
+
+
 #endif // ARRAYHELP_H
 
