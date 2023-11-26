@@ -8,9 +8,7 @@ function [data_raw] = generate_simulate_data(angle,parameters)
 %           PARAMETERS - a structure contains information of parameters of tuning curve
 %
 %   Output: DATA_RAW - store simulate data points
-if size(angle,1) < size(angle,2)
-    angle = angle'; 
-end
+angle = angle(:); 
 data_raw.angle = angle;
 data_raw.responses = zeros(length(angle),1);
 
