@@ -16,8 +16,8 @@ center = edges(1:end-1) + (edges(1)+edges(2))/2;
 true_di = (rp-rn) * (1-exp(-0.5*180^2./sigma^2))./(rsp + rp + rn*exp(-0.5*180^2./sigma^2));
 
 
-% plot.get_rpref(true_di,filename,cell_num,0)
-% plot.get_alpha(true_di,filename,cell_num,0)
-% plot.get_rsp(true_di,filename,cell_num,0)
-% plot.get_sigma(true_di,filename,cell_num,0)
+plot.get_rpref(true_di,filename,cell_num,0)
+plot.get_alpha(true_di,filename,cell_num,0)
+plot.get_rsp(true_di,filename,cell_num,0)
+plot.get_sigma(true_di,filename,cell_num,0)
 plot.get_thetapref(true_di,filename,cell_num,0)
