@@ -5,7 +5,7 @@ clear all,clc,close all;
 cell_num = 5;
 measurement_num = 5;
 experiment_num = 10;
-ang = 0:30:359;
+ang = 0:45:359;
 %curves parameters
 rp = 10;
 rn = linspace(10,0,cell_num);

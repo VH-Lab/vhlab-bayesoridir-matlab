@@ -1,5 +1,5 @@
-clear all,clc;
-load('my_output_002.mat')
+clear all,close,clc;
+load('my_linear.mat')
 %test4 : heatmap and pcolor plotting of OI
 %simulated 'true' curves
 cell_num = 5;
@@ -11,7 +11,7 @@ rsp = linspace(10,0,cell_num);
 edges = 0:0.05:1;
 center = edges(1:end-1) + (edges(1)+edges(2))/2;
 % calculate the 'true OI value' of all 50 simulate curve.
-true_oi = 1 - (2.*rsp + 2.*(rp + rn).*exp(-0.5*90^2/30^2))./(2.*rsp + (rp + rn).*(1 + exp(-0.5*90^2/30^2)));
+true_oi = 1 - (2.*rsp + 2.*(rp + rn).*exp(-0.5*90^2/30^2))./(2.*rsp + (rp + rn).*(1 + exp(-0.5*180^2/30^2)));
 % extract oi likelihood data in output structure. Transform the data form into
 % plotting suitable form
 oi_lik = zeros(length(output),length(output(1).descriptors.oi.histogram_likelihoods));
@@ -34,18 +34,18 @@ oi_lik_pcolor = [oi_lik_pcolor,zeros(length(edges),1)];
 %plotting
 % x-axie represent the value of 'true OI'
 figure(1),
-tiledlayout flow
-nexttile
+% tiledlayout flow
+% nexttile
 heatmap(true_oi,flip(center),flip(oi_lik_heatmap),'Colormap',parula)
 xlabel('Value of ^\primetrue OI^\prime')
 ylabel('Probability of OI Value')
 title('Distribution of OI Probability')
 
-nexttile
-pcolor([true_oi 1],edges,oi_lik_pcolor)
-xlabel('Value of ^\primetrue OI^\prime')
-ylabel('Probability of OI Value')
-title('Distribution of OI Probability')
+% nexttile
+% pcolor([true_oi 1],edges,oi_lik_pcolor)
+% xlabel('Value of ^\primetrue OI^\prime')
+% ylabel('Probability of OI Value')
+% title('Distribution of OI Probability')
 %%
 % plotting by another way
 % x_axie represent the bin of the value of 'true OI'
@@ -74,18 +74,18 @@ oi_lik_pcolor = [oi_lik_heatmap;zeros(1,length(output(1).descriptors.oi.histogra
 oi_lik_pcolor = [oi_lik_pcolor,zeros(length(edges),1)];
 
 figure(2),
-tiledlayout flow
-nexttile
+% tiledlayout flow
+% nexttile
 heatmap(center,flip(center),flip(oi_lik_heatmap),'Colormap',parula)
 xlabel('Value of OI')
 ylabel('Predict OI Value')
 title('Distribution of OI Probability')
 
-nexttile
-pcolor(edges,edges,oi_lik_pcolor)
-xlabel('Value of OI')
-ylabel('Predict of OI Value')
-title('Distribution of OI Probability')
+% nexttile
+% pcolor(edges,edges,oi_lik_pcolor)
+% xlabel('Value of OI')
+% ylabel('Predict of OI Value')
+% title('Distribution of OI Probability')
 %%
 % extract rpref likelihood data in output structure. Transform the data form into
 % plotting suitable form

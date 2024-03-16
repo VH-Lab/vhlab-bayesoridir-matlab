@@ -26,7 +26,7 @@ for i = 1:length(filename)
 end
 maxlim = max(thetapref_lik_heatmap,[],'all')
 figure(),
-tiledlayout(3,4)
+tiledlayout flow
 for i = 1:length(filename)
     nexttile,
     f1 = heatmap(true_index_value,round(flip(output(1).marginal_likelihood.theta_pref.values),2),flip(thetapref_lik_heatmap(:,:,i)), ...

@@ -2,7 +2,7 @@ clear all,clc,close all;
 %test5 : heatmap plotting for marginal likelihood of parameters
 % extract file name
 file = dir('*my_output_0*');
-filename = {file.name};
+filename = {file(12).name};
 %simulated 'true' curves
 cell_num = 5;
 rp = 10;

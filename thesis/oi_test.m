@@ -1,10 +1,10 @@
-clear,clc;
+clear all,clc,close all;
 % test1 - prediction of different OI value
 %simulated 'true' curves
 cell_num = 5;
 measurement_num = 5;
-experiment_num = 15;
-ang = 0:22.5:359;
+experiment_num = 10;
+ang = 0:45:359;
 rp = linspace(0,10,cell_num);
 rn = linspace(0,5,cell_num);
 rsp = linspace(10,0,cell_num);
