@@ -7,3 +7,5 @@
 *.asv
 *.m~
 __pycache__
+thesis/data/stevesolddata.README.txt
+thesis/data/stevesolddata.mat
