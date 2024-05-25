@@ -23,7 +23,42 @@ ideal_h = data.generate_simulate_data(ang,parameter_h);
 noisy_l = data.generate_noise(ideal_l,5,1);
 noisy_m = data.generate_noise(ideal_m,5,1);
 noisy_h = data.generate_noise(ideal_h,5,1);
+%% 
+% B - A row of marginal probabilities for theta_p, Rp, and DI (use color to
+% indicate cell identity).A situation where Bayesian parameter estimation
+% allows insight into the responses of neurons where least-squares does
+% not.
 
+% Noise least-square fitting
+m = [];
+v = [];
+m = [noisy_l.mean_responses,noisy_m.mean_responses,noisy_h.mean_responses];
+v = [noisy_l.responses_stddev;noisy_m.responses_stddev;noisy_h.responses_stddev];
+mdl = fitlm(log10(m),log10(v)),
+figure(100),plot(mdl);
+xlabel('log10(response mean)'),
+ylabel('log10(response stddev)'),
+title('Noise Model'),
+noise_coefficients = mdl.Coefficients{:,1};
+% Bayes Estimate Grid Range and Size
+I = struct('Rp',linspace(0.1,20,30), ...
+    'Op',0:15:359, ...
+    'Alpha',linspace(0,1,15), ...
+    'Sig',linspace(5,60,30), ...
+    'Rsp',linspace(0.1,10,20));
+% Bayes Estimation
+tic,
+[bayes_l,lik_l] = bayes_grid_function_proportional_noise(I,noisy_l,noise_coefficients);
+[bayes_m,lik_m] = bayes_grid_function_proportional_noise(I,noisy_m,noise_coefficients);
+[bayes_h,lik_h] = bayes_grid_function_proportional_noise(I,noisy_h,noise_coefficients);
+toc,
+bayes_l.maximum_likelihood.parameters,
+bayes_m.maximum_likelihood.parameters,
+bayes_h.maximum_likelihood.parameters,
+%%
+clear all;close;clc;
+load Figure2.mat
+%%
 F2a = figure(1);
 hold on,
 plot(ideal_l.angle,ideal_l.responses,'Color','#0072BD','LineWidth',1),% show low tf ideal curve
@@ -60,38 +95,7 @@ title('C');% High TF Curve
 f2c = gca;
 hold off;
 
-%% 
-% B - A row of marginal probabilities for theta_p, Rp, and DI (use color to
-% indicate cell identity).A situation where Bayesian parameter estimation
-% allows insight into the responses of neurons where least-squares does
-% not.
 
-% Noise least-square fitting
-m = [];
-v = [];
-m = [noisy_l.mean_responses,noisy_m.mean_responses,noisy_h.mean_responses];
-v = [noisy_l.responses_stddev;noisy_m.responses_stddev;noisy_h.responses_stddev];
-mdl = fitlm(log10(m),log10(v)),
-figure(100),plot(mdl);
-xlabel('log10(response mean)'),
-ylabel('log10(response stddev)'),
-title('Noise Model'),
-noise_coefficients = mdl.Coefficients{:,1};
-% Bayes Estimate Grid Range and Size
-I = struct('Rp',linspace(0.1,20,30), ...
-    'Op',0:15:359, ...
-    'Alpha',linspace(0,1,15), ...
-    'Sig',linspace(5,60,30), ...
-    'Rsp',linspace(0.1,10,20));
-% Bayes Estimation
-tic,
-[bayes_l,lik_l] = bayes_grid_function_proportional_noise(I,noisy_l,noise_coefficients);
-[bayes_m,lik_m] = bayes_grid_function_proportional_noise(I,noisy_m,noise_coefficients);
-[bayes_h,lik_h] = bayes_grid_function_proportional_noise(I,noisy_h,noise_coefficients);
-toc,
-bayes_l.maximum_likelihood.parameters,
-bayes_m.maximum_likelihood.parameters,
-bayes_h.maximum_likelihood.parameters,
 %% 
 F2d = figure(4);
 hold on,
@@ -119,19 +123,21 @@ title('E');%Marginal Probability of R_{p}
 f2e = gca;
 hold off;
 
-edges = 0:0.01:1;
+edges = 0:0.05:1;
 center = edges(1:end-1) + (edges(1)+edges(2))/2;
-bar1 = [bayes_l.descriptors.di.histogram_likelihoods;bayes_m.descriptors.di.histogram_likelihoods;bayes_h.descriptors.di.histogram_likelihoods]';
+bayes_l_di = sum(reshape(bayes_l.descriptors.di.histogram_likelihoods,5,[]));
+bayes_m_di = sum(reshape(bayes_m.descriptors.di.histogram_likelihoods,5,[]));
+bayes_h_di = sum(reshape(bayes_h.descriptors.di.histogram_likelihoods,5,[]));
+bar1 = [bayes_l_di;bayes_m_di;bayes_h_di]';
 
 F2f = figure(6);
 hold on,
 % plot(center,bayes_l.descriptors.di.histogram_likelihoods,'Color','#0072BD','LineWidth',1),
 % plot(center,bayes_m.descriptors.di.histogram_likelihoods,'Color','#EDB120','LineWidth',1),
 % plot(center,bayes_h.descriptors.di.histogram_likelihoods,'Color','#77AC30','LineWidth',1),
-b = bar(center,bar1,1);
-b(1).FaceColor = '#0072BD';
-b(2).FaceColor = '#EDB120';
-b(3).FaceColor = '#77AC30';
+plot(center,bayes_l_di,'Color','#0072BD','LineWidth',2);
+plot(center,bayes_m_di,'Color','#EDB120','LineWidth',2);
+plot(center,bayes_h_di,'Color','#77AC30','LineWidth',2);
 ylim([0,0.5]),
 xlabel('DI'),
 ylabel('Probability'),

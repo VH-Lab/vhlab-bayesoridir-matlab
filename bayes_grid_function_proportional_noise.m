@@ -74,7 +74,7 @@ di_lik = squeeze(sum(Lik,2));
 oi_lik = squeeze(sum(Lik,2));
 
 %circular variance histogram
-[di_index] = discretize(di(:),0:0.01:1);
+[di_index] = discretize(di(:),0:0.05:1);
 for bin = 1:max(di_index)
     F = di_index==bin;
     di_count(bin) = sum(F);
@@ -82,7 +82,7 @@ for bin = 1:max(di_index)
 end
 di_lik_count = di_lik_count./sum(di_lik_count);
 
-[oi_index] = discretize(oi(:),0:0.01:1);
+[oi_index] = discretize(oi(:),0:0.05:1);
 for bin = 1:max(oi_index)
     F = oi_index==bin;
     oi_count(bin) = sum(F);
@@ -90,7 +90,7 @@ for bin = 1:max(oi_index)
 end
 oi_lik_count = oi_lik_count./sum(oi_lik_count);
 
-[dcv_index] = discretize(dir_cv_value(:),0:0.01:1);
+[dcv_index] = discretize(dir_cv_value(:),0:0.05:1);
 for bin = 1:max(dcv_index)
     F = dcv_index==bin;
     dcv_count(bin) = sum(F);
@@ -98,7 +98,7 @@ for bin = 1:max(dcv_index)
 end
 dcv_lik = dcv_lik./sum(dcv_lik);
 
-[cv_index] = discretize(ori_cv_value(:),0:0.01:1);
+[cv_index] = discretize(ori_cv_value(:),0:0.05:1);
 for bin = 1:max(cv_index)
     F = cv_index==bin;
     cv_count(bin) = sum(F);

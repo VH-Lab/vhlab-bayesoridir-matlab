@@ -82,7 +82,7 @@ f1b = gca;
 %%
 % E,F - Marginal likelihood of theta-pref
 F1c = figure(3);
-plot(bayes_w.marginal_likelihood.theta_pref.values,bayes_w.marginal_likelihood.theta_pref.likelihoods,'LineWidth',2)
+plot(bayes_w.marginal_likelihood.theta_pref.values,bayes_w.marginal_likelihood.theta_pref.likelihoods)
 ylim([0,1]),
 xlabel('\theta_{pref}'),
 ylabel('Marginal Likelihood'),
@@ -90,7 +90,7 @@ title('C');%Well Tuned Theta-pref
 f1c = gca;
 
 F1d = figure(4);
-plot(bayes_p.marginal_likelihood.theta_pref.values,bayes_p.marginal_likelihood.theta_pref.likelihoods,'LineWidth',2)
+plot(bayes_p.marginal_likelihood.theta_pref.values,bayes_p.marginal_likelihood.theta_pref.likelihoods)
 ylim([0,1])
 xlabel('\theta_{pref}'),
 ylabel('Marginal Likelihood'),
@@ -99,7 +99,7 @@ f1d = gca;
 
 % G,H - Marginal likelihood of Rp
 F1e = figure(5);
-plot(bayes_w.marginal_likelihood.Rp.values,bayes_w.marginal_likelihood.Rp.likelihoods,'LineWidth',2)
+plot(bayes_w.marginal_likelihood.Rp.values,bayes_w.marginal_likelihood.Rp.likelihoods)
 ylim([0,1])
 xlabel('R_{pref}'),
 ylabel('Marginal Likelihood'),
@@ -107,7 +107,7 @@ title('E');%Well Tuned Rp
 f1e = gca;
 
 F1f = figure(6);
-plot(bayes_p.marginal_likelihood.Rp.values,bayes_p.marginal_likelihood.Rp.likelihoods,'LineWidth',2)
+plot(bayes_p.marginal_likelihood.Rp.values,bayes_p.marginal_likelihood.Rp.likelihoods)
 ylim([0,1])
 xlabel('R_{pref}'),
 ylabel('Marginal Likelihood'),
@@ -115,10 +115,14 @@ title('F');%Poorly Tuned Rp
 f1f = gca;
 
 % I,J - Marginal likelihood of OI
-edges = 0:0.01:1;
+
+%Divide the OI interval from 0 to 1 into 20 equal parts
+bayes_w_oi = sum(reshape(bayes_w.descriptors.oi.histogram_likelihoods,5,[]));
+bayes_p_oi = sum(reshape(bayes_p.descriptors.oi.histogram_likelihoods,5,[]));
+edges = 0:0.05:1;
 center = edges(1:end-1) + (edges(1)+edges(2))/2;
 F1g = figure(7);
-bar(center,bayes_w.descriptors.oi.histogram_likelihoods,1)
+plot(center,bayes_w_oi)
 ylim([0,0.5])
 xlabel('Orientation Index (OI)'),
 ylabel('Probability'),
@@ -126,7 +130,7 @@ title('G');%Well Tuned OI
 f1g = gca;
 
 F1h = figure(8);
-bar(center,bayes_p.descriptors.oi.histogram_likelihoods,1)
+plot(center,bayes_p_oi)
 ylim([0,0.5])
 xlabel('Orientation Index (OI)'),
 ylabel('Probability'),
@@ -134,8 +138,13 @@ title('H');%Poorly Tuned OI
 f1h = gca;
 
 % K,L - Marginal likelihood of DI
+
+%Divide the OI interval from 0 to 1 into 20 equal parts
+bayes_w_di = sum(reshape(bayes_w.descriptors.di.histogram_likelihoods,5,[]));
+bayes_p_di = sum(reshape(bayes_p.descriptors.di.histogram_likelihoods,5,[]));
+
 F1i = figure(9);
-bar(center,bayes_w.descriptors.di.histogram_likelihoods,1)
+plot(center,bayes_w_di)
 ylim([0,0.5])
 xlabel('Direction Index (DI)'),
 ylabel('Probability'),
@@ -143,7 +152,7 @@ title('I');%Well Tuned DI
 f1i = gca;
 
 F1j = figure(10);
-bar(center,bayes_p.descriptors.di.histogram_likelihoods,1)
+plot(center,bayes_p_di)
 ylim([0,0.5])
 xlabel('Direction Index (DI)'),
 ylabel('Probability'),
