@@ -1,10 +1,13 @@
 % Reset workspace and load exist data documents from the file
 clear all;close;clc;
-load my_fig7_debug_2.mat;
+%load my_fig7_debug_3_before.mat;
+load my_fig7_new.mat
 load stevesolddata.mat;
+if exist("noisy_BME","var")
+    noisy_before = noisy_BME;
+end
 %%
-% Fig 4 - Performance of Bayesian parameter estimation for simulated data
-% of varying orientation tuning.
+% Fig 7 - Bayes Estimation Result from Real Neuron Dataset
 good_indexes_before = [];
 good_indexes_motionexposure = [];
 
@@ -22,6 +25,8 @@ for i=1:numel(cell_structures),
         end;
     end;
 end;
+
+good_both = intersect(good_indexes_before,good_indexes_motionexposure);
 % create plotting edges(n+1) and center(n) N = curves number
 edges = 0:0.05:1;
 center = edges(1:end-1) + (edges(1)+edges(2))/2;
@@ -36,8 +41,8 @@ figure(i),hold on;
 errorbar(noisy_before(i).angle,noisy_before(i).mean_responses,noisy_before(i).responses_stderr,'*','Color','#A2142F','MarkerSize',7)
 plot(0:359,output(i).maximum_likelihood.parameters.tunning_curve,'Color',curvecolor{i},'LineWidth',1)
 xlim([-5,365]),
-ylim([-0.12,0.2]),
-yticks(0:0.05:0.2)
+ylim([-0.02,0.3]),
+yticks(-0.1:0.05:0.3)
 xlabel('Direction of Stimuli Motion'),
 ylabel('Response(Hz)'),
 legend('V1 Data Points','Bayes Estimation'),
@@ -109,15 +114,69 @@ all_types = {cell_structures{1}(:).type}';
 % column 4 : sigma (tuning width)
 % column 5 : Rnull
 data_bootsbefore = [];
-for i=1:numel(good_indexes_before),
-    for j=1:numel(cell_structures{good_indexes_before(i)}),
-        if strcmp(cell_structures{good_indexes_before(i)}(j).type,'TP Ach OT Bootstrap Carandini Fit Params'),
-            data_bootsbefore{i} = cell_structures{good_indexes_before(i)}(j).data;
+for i=1:numel(good_both),
+    for j=1:numel(cell_structures{good_both(i)}),
+        if strcmp(cell_structures{good_both(i)}(j).type,'TP Ach OT Bootstrap Carandini Fit Params'),
+            data_bootsbefore{i} = cell_structures{good_both(i)}(j).data;
         end;
     end;
 end;
+for i = 1:numel(data_bootsbefore),
+    rsp_min(i) = min(data_bootsbefore{i}(:,1));
+    rsp_max(i) = max(data_bootsbefore{i}(:,1));
+    rp_min(i) = min(data_bootsbefore{i}(:,2));
+    rp_max(i) = max(data_bootsbefore{i}(:,2));
+    op_min(i) = min(data_bootsbefore{i}(:,3));
+    op_max(i) = max(data_bootsbefore{i}(:,3));
+    sig_min(i) = min(data_bootsbefore{i}(:,4));
+    sig_max(i) = max(data_bootsbefore{i}(:,4));
+    rn_min(i) = min(data_bootsbefore{i}(:,5));
+    rn_max(i) = max(data_bootsbefore{i}(:,5));
+end;
+rsp_range = [min(rsp_min),max(rsp_max)]
+rp_range = [min(rp_min),max(rp_max)]
+op_range = [min(op_min),max(op_max)]
+sig_range = [min(sig_min),max(sig_max)]
+rn_range = [min(rn_min),max(rn_max)]
 
-N = histc(data_bootsbefore{3}(:,1),linspace(0.001,0.3,30));
-% N = N./sum(N,'all');
+var = max(noisy_before(1).mean_responses);
+
+N = histc(data_bootsbefore{3}(:,1),linspace(-var,var,40));
+N = N./sum(N,'all');
 figure(11),
-bar(linspace(0.001,0.3,30),N);
+bar(linspace(-var,var,40),N);
+ylim([0,1]),
+xlabel('Response Offset'),
+ylabel('Probability'),
+
+N = histc(data_bootsbefore{3}(:,2),linspace(0.001,3*var,60));
+N = N./sum(N,'all');
+figure(12),
+bar(linspace(0.001,3*var,60),N);
+ylim([0,1]),
+xlabel('R_{p}'),
+ylabel('Probability'),
+
+N = histc(data_bootsbefore{3}(:,3),0:5:359);
+N = N./sum(N,'all');
+figure(13),
+bar(0:5:359,N);
+ylim([0,1]),
+xlabel('\theta_{p}'),
+ylabel('Probability'),
+
+N = histc(data_bootsbefore{3}(:,4),linspace(1,60,60));
+N = N./sum(N,'all');
+figure(14),
+bar(linspace(1,60,60),N);
+ylim([0,1]),
+xlabel('\sigma'),
+ylabel('Probability'),
+
+N = histc(data_bootsbefore{3}(:,5),linspace(0,3*var,60));
+N = N./sum(N,'all');
+figure(15),
+bar(linspace(0,3*var,60),N);
+ylim([0,1]),
+xlabel('R_{null}'),
+ylabel('Probability'),

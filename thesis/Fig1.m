@@ -40,124 +40,112 @@ noise_coefficients = mdl.Coefficients{:,1};
 %%
 % C,D - Maximum likelihood Bayesian parameter estimation for the two cells
 % Bayes Estimate Grid Range and Size
-I = struct('Rp',linspace(0.1,20,30), ...
-    'Op',0:10:359, ...
+I = struct('Rp',linspace(0.1,20,60), ...
+    'Op',0:5:359, ...
     'Alpha',linspace(0,1,15), ...
-    'Sig',linspace(5,60,30), ...
-    'Rsp',linspace(0.1,10,20));
+    'Sig',linspace(1,60,60), ...
+    'Rsp',linspace(0.1,10,60));
 %Bayes Estimation
 tic,
-[bayes_w,lik_w] = bayes_grid_function_proportional_noise(I,noisy_w,noise_coefficients);
-[bayes_p,lik_p] = bayes_grid_function_proportional_noise(I,noisy_p,noise_coefficients);
+[bayes_w,lik_w] = bayes_grid_function_proportional_noise_gpu(I,noisy_w,noise_coefficients);
+[bayes_p,lik_p] = bayes_grid_function_proportional_noise_gpu(I,noisy_p,noise_coefficients);
 toc,
+
 %%
 % C,D - Maximum Likelihood Curve
 clear all;close;clc;
-load Figure1.mat
+load my_fig1.mat
+
+%%
 F1a = figure(1);
 hold on,
-plot(ideal_w.angle,ideal_w.responses,'k','LineWidth',2),% show well tuned ideal curve
+plot(ideal_w.angle,ideal_w.responses,'k','LineWidth',1),% show well tuned ideal curve
 errorbar(noisy_w.angle,noisy_w.mean_responses,noisy_w.responses_stderr,'b*'),%show well tuned noisy points
-plot(0:359,bayes_w.maximum_likelihood.parameters.tunning_curve,'r','LineWidth',2),
-xlim([0,370]),
+plot(0:359,bayes_w.maximum_likelihood.parameters.tunning_curve,'r','LineWidth',1),
+xlim([-5,365]),
 ylim([0,20]),
 legend('Ideal','+50% Noise','Bayes Estimation'),
 xlabel('Direction of Stimuli Motion'),
 ylabel('Response(Hz)'),
 title('A');%Well Tuned Curve
-f1a = gca;
 
 F1b = figure(2);
 hold on,
-plot(ideal_p.angle,ideal_p.responses,'k','LineWidth',2),% show poorly tuned ideal curve
+plot(ideal_p.angle,ideal_p.responses,'k','LineWidth',1),% show poorly tuned ideal curve
 errorbar(noisy_p.angle,noisy_p.mean_responses,noisy_p.responses_stderr,'b*'),%show poorly tuned noisy points
-plot(0:359,bayes_p.maximum_likelihood.parameters.tunning_curve,'r','LineWidth',2),
-xlim([0,370]),
+plot(0:359,bayes_p.maximum_likelihood.parameters.tunning_curve,'r','LineWidth',1),
+xlim([-5,365]),
 ylim([0,20]),
 legend('Ideal','+50% Noise','Bayes Estimation'),
 xlabel('Direction of Stimuli Motion'),
 ylabel('Response(Hz)'),
 title('B');%Poorly Tuned Curve
-f1b = gca;
 %%
 % E,F - Marginal likelihood of theta-pref
 F1c = figure(3);
-plot(bayes_w.marginal_likelihood.theta_pref.values,bayes_w.marginal_likelihood.theta_pref.likelihoods)
-ylim([0,1]),
+plot(bayes_w.marginal_likelihood.theta_pref.values,bayes_w.marginal_likelihood.theta_pref.likelihoods,'k')
+xlim([-5,365]),
+ylim([-0.02,1]),
 xlabel('\theta_{pref}'),
 ylabel('Marginal Likelihood'),
 title('C');%Well Tuned Theta-pref
-f1c = gca;
 
 F1d = figure(4);
-plot(bayes_p.marginal_likelihood.theta_pref.values,bayes_p.marginal_likelihood.theta_pref.likelihoods)
-ylim([0,1])
+plot(bayes_p.marginal_likelihood.theta_pref.values,bayes_p.marginal_likelihood.theta_pref.likelihoods,'k')
+xlim([-5,365]),
+ylim([-0.02,1])
 xlabel('\theta_{pref}'),
 ylabel('Marginal Likelihood'),
 title('D');%Poorly Tuned Theta-pref
-f1d = gca;
 
 % G,H - Marginal likelihood of Rp
 F1e = figure(5);
-plot(bayes_w.marginal_likelihood.Rp.values,bayes_w.marginal_likelihood.Rp.likelihoods)
-ylim([0,1])
+plot(bayes_w.marginal_likelihood.Rp.values,bayes_w.marginal_likelihood.Rp.likelihoods,'k')
+ylim([-0.02,1])
 xlabel('R_{pref}'),
 ylabel('Marginal Likelihood'),
 title('E');%Well Tuned Rp
-f1e = gca;
 
 F1f = figure(6);
-plot(bayes_p.marginal_likelihood.Rp.values,bayes_p.marginal_likelihood.Rp.likelihoods)
-ylim([0,1])
+plot(bayes_p.marginal_likelihood.Rp.values,bayes_p.marginal_likelihood.Rp.likelihoods,'k')
+ylim([-0.02,1])
 xlabel('R_{pref}'),
 ylabel('Marginal Likelihood'),
 title('F');%Poorly Tuned Rp
-f1f = gca;
 
 % I,J - Marginal likelihood of OI
 
-%Divide the OI interval from 0 to 1 into 20 equal parts
-bayes_w_oi = sum(reshape(bayes_w.descriptors.oi.histogram_likelihoods,5,[]));
-bayes_p_oi = sum(reshape(bayes_p.descriptors.oi.histogram_likelihoods,5,[]));
 edges = 0:0.05:1;
 center = edges(1:end-1) + (edges(1)+edges(2))/2;
 F1g = figure(7);
-plot(center,bayes_w_oi)
-ylim([0,0.5])
+plot(center,bayes_w.descriptors.oi.histogram_likelihoods,'k')
+ylim([-0.02,1])
 xlabel('Orientation Index (OI)'),
 ylabel('Probability'),
 title('G');%Well Tuned OI
-f1g = gca;
 
 F1h = figure(8);
-plot(center,bayes_p_oi)
-ylim([0,0.5])
+plot(center,bayes_p.descriptors.oi.histogram_likelihoods,'k')
+ylim([-0.02,1])
 xlabel('Orientation Index (OI)'),
 ylabel('Probability'),
 title('H');%Poorly Tuned OI
-f1h = gca;
 
 % K,L - Marginal likelihood of DI
 
-%Divide the OI interval from 0 to 1 into 20 equal parts
-bayes_w_di = sum(reshape(bayes_w.descriptors.di.histogram_likelihoods,5,[]));
-bayes_p_di = sum(reshape(bayes_p.descriptors.di.histogram_likelihoods,5,[]));
-
 F1i = figure(9);
-plot(center,bayes_w_di)
-ylim([0,0.5])
+plot(center,bayes_w.descriptors.di.histogram_likelihoods,'k')
+ylim([-0.02,1])
 xlabel('Direction Index (DI)'),
 ylabel('Probability'),
 title('I');%Well Tuned DI
-f1i = gca;
 
 F1j = figure(10);
-plot(center,bayes_p_di)
-ylim([0,0.5])
+plot(center,bayes_p.descriptors.di.histogram_likelihoods,'k')
+ylim([-0.02,1])
 xlabel('Direction Index (DI)'),
 ylabel('Probability'),
 title('J');%Poorly Tuned DI
-f1j = gca;
 
 %%
 % export figures
@@ -173,29 +161,3 @@ exportgraphics(F1g,[path 'Figure_1g.pdf'],"ContentType","vector")
 exportgraphics(F1h,[path 'Figure_1h.pdf'],"ContentType","vector")
 exportgraphics(F1i,[path 'Figure_1i.pdf'],"ContentType","vector")
 exportgraphics(F1j,[path 'Figure_1j.pdf'],"ContentType","vector")
-%% 
-% All in 1 figure
-fnew = figure(200);
-F1a_copy = copyobj(f1a,fnew);
-F1b_copy = copyobj(f1b,fnew);
-F1c_copy = copyobj(f1c,fnew);
-F1d_copy = copyobj(f1d,fnew);
-F1e_copy = copyobj(f1e,fnew);
-F1f_copy = copyobj(f1f,fnew);
-F1g_copy = copyobj(f1g,fnew);
-F1h_copy = copyobj(f1h,fnew);
-F1i_copy = copyobj(f1i,fnew);
-F1j_copy = copyobj(f1j,fnew);
-
-subplot(5,2,1,F1a_copy);
-legend('Ideal','+50% Noise','Bayes Estimation'),
-subplot(5,2,2,F1b_copy);
-legend('Ideal','+50% Noise','Bayes Estimation'),
-subplot(5,2,3,F1c_copy);
-subplot(5,2,4,F1d_copy);
-subplot(5,2,5,F1e_copy);
-subplot(5,2,6,F1f_copy);
-subplot(5,2,7,F1g_copy);
-subplot(5,2,8,F1h_copy);
-subplot(5,2,9,F1i_copy);
-subplot(5,2,10,F1j_copy);

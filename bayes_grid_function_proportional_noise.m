@@ -1,13 +1,15 @@
 function [output_struct,Lik] = bayes_grid_function_proportional_noise(grid_size,data,noise_mdl)
-%   DESCRIPTION:
+% BAYES_GRID_FUNCTION_PROPORTIONAL_NOISE Analyzes a five-dimensional probability density function
 %
-%   Inputs: GRID_SIZE - 
-%           DATA - 
-%           NOISE_MDL - 
+% Inputs:
+%   grid_size - Struct containing grids for Rp, Op, Alpha, Sig, Rsp
+%   data - Struct containing angle and mean_responses
+%   noise_mdl - Array containing offset and slope for the noise model
 %
-%   Outputs:OUTPUT_STRUCT - 
-%           LIK - 
-%
+% Outputs:
+%   output_struct - Struct containing noise model, marginal likelihoods, and other parameters
+%   Lik - Likelihood array
+
 % extract coefficients from noise linear regression model
 offset = noise_mdl(1);
 slope = noise_mdl(2);
@@ -25,8 +27,8 @@ for rp = 1:length(grid_size.Rp)
             for sig = 1:length(grid_size.Sig)
                 for rsp = 1:length(grid_size.Rsp)
                     fitting_rsp_v = grid_size.Rsp(rsp) + grid_size.Rp(rp) * exp(-0.5*angdiff(data.angle-grid_size.Op(op)).^2/grid_size.Sig(sig)^2) + grid_size.Alpha(alpha)* grid_size.Rp(rp) * exp(-0.5*angdiff(data.angle-(grid_size.Op(op)+180)).^2/grid_size.Sig(sig)^2);
-                    prsp = normpdf(data.mean_responses',fitting_rsp_v,10.^offset*fitting_rsp_v.^slope);
-                    multiprsp = squeeze(prod(prsp));
+                    pdf_rsp = normpdf(data.mean_responses',fitting_rsp_v,10.^offset*abs(fitting_rsp_v).^slope);
+                    multiprsp = squeeze(prod(pdf_rsp));
                     Lik(rp,op,alpha,sig,rsp) = multiprsp;
                     %direction index
                     di(rp,alpha,sig,rsp) = (1-grid_size.Alpha(alpha)) * (1-exp(-0.5*180^2./grid_size.Sig(sig)^2))./(grid_size.Rsp(rsp)./grid_size.Rp(rp) + 1 + grid_size.Alpha(alpha)*exp(-0.5*180^2./grid_size.Sig(sig)^2));
@@ -59,6 +61,13 @@ lik_sigma = squeeze(sum(sum(sum(sum(Lik,5),3),2),1));
 lik_sigma = lik_sigma./sum(lik_sigma,"all");
 lik_rsp = squeeze(sum(sum(sum(sum(Lik,4),3),2),1));
 lik_rsp = lik_rsp./sum(lik_rsp,"all");
+
+assert(abs(sum(lik_Rp) - 1) < 1e-6, 'lik_Rp does not sum to 1');
+assert(abs(sum(lik_theta_pref) - 1) < 1e-6, 'lik_theta_pref does not sum to 1');
+assert(abs(sum(lik_Alpha) - 1) < 1e-6, 'lik_Alpha does not sum to 1');
+assert(abs(sum(lik_sigma) - 1) < 1e-6, 'lik_sigma does not sum to 1');
+assert(abs(sum(lik_rsp) - 1) < 1e-6, 'lik_rsp does not sum to 1');
+
 [~,ind] = max(Lik,[],'all');
 ind = squeeze(ind);
 [rp,op,alpha,sig,rsp] = ind2sub(size(Lik),ind);

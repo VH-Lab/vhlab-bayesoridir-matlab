@@ -12,12 +12,13 @@ rn = linspace(10,0,cell_num);
 rsp = 0;
 angle = 45;
 sigma = 30;
+%%
 % bayes grid input
-I = struct('Rp',linspace(0.1,20,30), ...
-    'Op',0:10:359, ...
+I = struct('Rp',linspace(0.1,20,60), ...
+    'Op',0:5:359, ...
     'Alpha',linspace(0,1,15), ...
-    'Sig',linspace(5,60,30), ...
-    'Rsp',linspace(0.1,10,20));
+    'Sig',linspace(1,60,60), ...
+    'Rsp',linspace(0.1,10,60));
 %%
 %   generate simulate data
 %   store in cell matrix. one cell one curve.
@@ -57,7 +58,7 @@ tic
 for i = 1:cell_num
     for j = 1:experiment_num
         fprintf('the fitting is at %d loop.\n',(i-1)*experiment_num + j)
-        [output((i-1)*experiment_num + j),Lik] = bayes_grid_function_proportional_noise(I,data_mean{i}(j),noise_coefficients);
+        [output((i-1)*experiment_num + j),Lik] = bayes_grid_function_proportional_noise_gpu(I,data_mean{i}(j),noise_coefficients);
         toc;
     end
 end

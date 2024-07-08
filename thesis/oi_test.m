@@ -1,19 +1,20 @@
 clear all,clc,close all;
 % test1 - prediction of different OI value
 %simulated 'true' various curves / single curve
-cell_type = 1;
+cell_type = 5;
 measurement_num = 5;
-experiment_num = 20;
+experiment_num = 10;
 ang = 0:45:359;
-rp = 7.5;
-rn = 3.75;
-rsp = 2.5;
+rp = linspace(0,10,5);
+rn = linspace(0,5,5);
+rsp = linspace(10,0,5);
+%%
 % bayes grid input
-I = struct('Rp',linspace(0.1,20,30), ...
-    'Op',0:10:359, ...
+I = struct('Rp',linspace(0.1,20,60), ...
+    'Op',0:5:359, ...
     'Alpha',linspace(0,1,15), ...
-    'Sig',linspace(5,60,30), ...
-    'Rsp',linspace(0.1,10,20));
+    'Sig',linspace(1,60,60), ...
+    'Rsp',linspace(0.1,10,60));
 %%
 %   generate simulate data
 %   store in cell matrix. one cell one curve.
@@ -32,7 +33,7 @@ for i = 1:cell_type
         title('simulate tuning curve (+50% noise)')
     end
 end
-
+%%
 %noise fitting model
 m = [];
 v = [];
@@ -53,7 +54,7 @@ tic
 for i = 1:cell_type
     for j = 1:experiment_num
         fprintf('the fitting is at %d loop.\n',(i-1)*experiment_num + j)
-        [output((i-1)*experiment_num + j),Lik] = bayes_grid_function_proportional_noise(I,data_noisy{i}(j),noise_coefficients);
+        [output((i-1)*experiment_num + j),~] = bayes_grid_function_proportional_noise_gpu(I,data_noisy{i}(j),noise_coefficients);
         toc;
     end
 end
