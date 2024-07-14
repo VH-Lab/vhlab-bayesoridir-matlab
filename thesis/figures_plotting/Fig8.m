@@ -6,17 +6,16 @@ clear;clc,clf;
 % theta_pref.
 
 % Bayes fitting - 06082024
-load("bayes_before_motionexposure.mat")
+load my_fig8_kcs_BME.mat
 
 output_BME = output;
-noisy_BME = noisy_before;
+
 clear output I noisy_before
 
 % Bayes fitting - 06082024
-load("bayes_afterME.mat")
+load my_fig8_kcs_AME.mat
 
 output_AME = output;
-noisy_AME = noisy_ME;
 
 clear output I noisy_ME
 
@@ -129,6 +128,7 @@ for i = 1:numel(data_bootsBME),
         nexttile,hold on,
         plot(0:5:359,output_BME(i).marginal_likelihood.theta_pref.likelihoods,'b')
         plot(0:5:359,op_N,'b--')
+        xlim([-5 365])
         ylim([0,1])
         legend('Bayes BME','Bootstrap BME')
         xlabel('\theta_{pref}')
@@ -216,7 +216,7 @@ for i = 1:numel(data_bootsAME),
         'Op',0:5:359, ...
         'Alpha',linspace(0,1,21), ...
         'Sig',linspace(1,60,60), ...
-        'Rsp',linspace(-var,var,40), ...
+        'Rsp',linspace(-var,var,60), ...
         'Rn',linspace(0,3*var,60));
 
     rsp_N = histc(data_bootsAME{i}(:,1),linspace(-var,var,40));
@@ -235,6 +235,7 @@ for i = 1:numel(data_bootsAME),
         nexttile,hold on,
         plot(0:5:359,output_AME(i).marginal_likelihood.theta_pref.likelihoods,'r')
         plot(0:5:359,op_N,'r--')
+        xlim([-5 365])
         ylim([0,1])
         legend('Bayes AME','Bootstrap AME')
         xlabel('\theta_{pref}')
@@ -302,59 +303,90 @@ end
 toc;
 %%
 figure(1),hold on,
-plot(rsp_bootsBME,rsp_BayesBME,'sb')
-plot(rsp_bootsAME,rsp_BayesAME,'xr')
-rsp_min_axis = 1.05 * min([rsp_bootsAME(:);rsp_BayesAME(:);rsp_bootsBME(:);rsp_BayesBME(:)]);
-rsp_max_axis = 1.05 * max([rsp_bootsAME(:);rsp_BayesAME(:);rsp_bootsBME(:);rsp_BayesBME(:)]);
+plot(rsp_bootsBME,rsp_BayesBME,'sb','LineWidth',1)
+plot(rsp_bootsAME,rsp_BayesAME,'xr','LineWidth',1)
+rsp_min_axis = -.24;
+rsp_max_axis = .21;
 plot([rsp_min_axis,rsp_max_axis],[rsp_min_axis,rsp_max_axis],'k--')
 xlim([rsp_min_axis,rsp_max_axis])
 ylim([rsp_min_axis,rsp_max_axis])
+xticks(-.2:.1:.21)
+yticks(-.2:.1:.21)
 legend('Before Motion Exposure','After Motion Exposure','Location','northwest')
 xlabel('Response Offset ETA From Bootstrap')
 ylabel('Response Offset ETA From Bayes Estimation')
 
 figure(2),hold on,
-plot(rp_bootsBME,rp_BayesBME,'sb')
-plot(rp_bootsAME,rp_BayesAME,'xr')
-plot([0 360],[0 360],'k--')
-rp_min_axis = 1.05 * min([rp_bootsAME(:);rp_BayesAME(:);rp_bootsBME(:);rp_BayesBME]);
-rp_max_axis = 1.05 * max([rp_bootsAME(:);rp_BayesAME(:);rp_bootsBME(:);rp_BayesBME]);
+plot(rp_bootsBME,rp_BayesBME,'sb','LineWidth',1)
+plot(rp_bootsAME,rp_BayesAME,'xr','LineWidth',1)
+rp_min_axis = -.02;
+rp_max_axis = 0.5;
 plot([rp_min_axis,rp_max_axis],[rp_min_axis,rp_max_axis],'k--')
 xlim([rp_min_axis,rp_max_axis])
 ylim([rp_min_axis,rp_max_axis])
+xticks(0:.1:.5)
+yticks(0:.1:.5)
 xlabel('R_{pref} ETA From Bootstrap')
 ylabel('R_{pref} ETA From Bayes Estimation')
 
 figure(3),hold on,
-plot(op_bootsBME,op_BayesBME,'sb')
-plot(op_bootsAME,op_BayesAME,'xr')
-op_min_axis = min([op_bootsAME(:);op_BayesAME(:);op_bootsBME(:);op_BayesBME(:)]) - 0.05 * max([op_bootsAME(:);op_BayesAME(:);op_bootsBME(:);op_BayesBME(:)]);
-op_max_axis = 1.05 * max([op_bootsAME(:);op_BayesAME(:);op_bootsBME(:);op_BayesBME(:)]);
+plot(op_bootsBME,op_BayesBME,'sb','LineWidth',1)
+plot(op_bootsAME,op_BayesAME,'xr','LineWidth',1)
+op_min_axis = -5;
+op_max_axis = 365;
 plot([op_min_axis,op_max_axis],[op_min_axis,op_max_axis],'k--')
 xlim([op_min_axis,op_max_axis])
 ylim([op_min_axis,op_max_axis])
+xticks(0:100:400)
+yticks(0:100:400)
 xlabel('\theta_{pref} ETA From Bootstrap')
 ylabel('\theta_{pref} ETA from Bayes Estimation')
 
 figure(4),hold on,
-plot(sig_bootsBME,sig_BayesBME,'sb')
-plot(sig_bootsAME,sig_BayesAME,'xr')
-sig_min_axis = 1.05 * min([sig_bootsAME(:);sig_BayesAME(:);sig_bootsBME(:);sig_BayesBME(:)]);
-sig_max_axis = 1.05 * max([sig_bootsAME(:);sig_BayesAME(:);sig_bootsBME(:);sig_BayesBME(:)]);
+plot(sig_bootsBME,sig_BayesBME,'sb','LineWidth',1)
+plot(sig_bootsAME,sig_BayesAME,'xr','LineWidth',1)
+sig_min_axis = -1;
+sig_max_axis = 62;
 plot([sig_min_axis,sig_max_axis],[sig_min_axis,sig_max_axis],'k--')
 xlim([sig_min_axis,sig_max_axis])
 ylim([sig_min_axis,sig_max_axis])
+xticks(0:10:60)
+yticks(0:10:60)
 xlabel('\sigma ETA From Bootstrap')
 ylabel('\sigma ETA From Bayes Estimation')
 
 figure(5),hold on,
-plot(rn_bootsBME,rn_BayesBME,'sb')
-plot(rn_bootsAME,rn_BayesAME,'xr')
-rn_min_axis = min([rn_bootsAME(:);rn_BayesAME(:);rn_bootsBME(:);rn_BayesBME(:)]) - 0.05 * max([rn_bootsAME(:);rn_BayesAME(:);rn_bootsBME(:);rn_BayesBME(:)]);
-rn_max_axis = 1.05 * max([rn_bootsAME(:);rn_BayesAME(:);rn_bootsBME(:);rn_BayesBME(:)]);
+plot(rn_bootsBME,rn_BayesBME,'sb','LineWidth',1)
+plot(rn_bootsAME,rn_BayesAME,'xr','LineWidth',1)
+rn_min_axis = -.01;
+rn_max_axis = .5;
 plot([rn_min_axis,rn_max_axis],[rn_min_axis,rn_max_axis],'k--')
 xlim([rn_min_axis,rn_max_axis])
 ylim([rn_min_axis,rn_max_axis])
-legend('Before Motion Exposure','After Motion Exposure','Location','northwest')
+xticks(0:.1:.5)
+yticks(0:.1:.5)
+legend('Before Motion Exposure','After Motion Exposure','Location','southeast')
 xlabel('R_{null} ETA From Bootstrap')
 ylabel('R_{null} ETA From Bayes Estimation')
+
+%%
+% export figures
+F8a = figure(32);
+F8b = figure(40);
+F8c = figure(120);
+F8d = figure(1);
+F8e = figure(2);
+F8f = figure(3);
+F8g = figure(4);
+F8h = figure(5);
+
+path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs';
+
+exportgraphics(F8a,[path 'Figure_8a_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F8b,[path 'Figure_8b_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F8c,[path 'Figure_8c_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F8d,[path 'Figure_8d_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F8e,[path 'Figure_8e_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F8f,[path 'Figure_8f_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F8g,[path 'Figure_8g_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F8h,[path 'Figure_8h_kcs.pdf'],"ContentType","vector"),

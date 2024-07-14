@@ -9,8 +9,15 @@ function [output_struct,Lik] = bayes_grid_function_proportional_noise(grid_size,
 %           LIK - 
 %
 % extract coefficients from noise linear regression model
-offset = noise_mdl(1);
-slope = noise_mdl(2);
+if numel(noise_mdl) == 2
+    offset = noise_mdl(1);
+    slope = noise_mdl(2);
+    k = [];
+elseif numel(noise_mdl) == 3
+    offset = noise_mdl(1);
+    k = noise_mdl(2);
+    slope = noise_mdl(3);
+end
 % build bayes grid matrix
 Lik = gpuArray(zeros(length(grid_size.Rp),length(grid_size.Op),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp)));
 di = gpuArray(zeros(length(grid_size.Rp),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp)));
@@ -24,7 +31,9 @@ data_mean_expanded = gpuArray(reshape(data.mean_responses', 1, 1, 1, 1, []));
 for rsp = 1:length(grid_size.Rsp)
     fprintf('This loop round left: %d \n',length(grid_size.Rsp)+1-rsp);
     fitting_rsp_v = grid_size.Rsp(rsp) + rp_expanded .* exp(-0.5 * angdiff(data_angle_expanded - op_expanded) .^ 2 ./ sig_expanded .^ 2) + alpha_expanded .* rp_expanded .* exp(-0.5 * angdiff(data_angle_expanded - (op_expanded + 180)) .^ 2 ./ sig_expanded .^ 2);
-    prsp = normpdf(data_mean_expanded,fitting_rsp_v,10.^offset*abs(fitting_rsp_v).^slope);
+    
+    noise_sigma = vis.bayes.noise.proportional(noise_mdl,abs(fitting_rsp_v),abs(fitting_rsp_v));
+    prsp = normpdf(data_mean_expanded,fitting_rsp_v,noise_sigma);
     multiprsp = squeeze(prod(prsp,5));
     Lik(:,:,:,:,rsp) = multiprsp;
 
@@ -130,7 +139,7 @@ oi_count = gather(oi_count);
 oi_lik_count = gather(oi_lik_count);
 
 output_struct = struct( ...
-    'noise_model',struct('type',{'proportional'},'offset',offset,'slope',slope), ...
+    'noise_model',struct('type',{'proportional'},'offset',offset,'slope',slope,'k',k), ...
     'other_parameters',struct('independent_variable',{'angle'},'independent_variable_value',data.angle), ...
     'marginal_likelihood',struct( ...
         'theta_pref',struct('values',grid_size.Op,'likelihoods',lik_theta_pref), ...

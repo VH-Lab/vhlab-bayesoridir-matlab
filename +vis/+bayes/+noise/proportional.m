@@ -7,7 +7,8 @@ function [sigma] = proportional(noise_model, responses, num_trials)
 % the response in a manner such that it is linear on a log-log plot.
 % 
 % For a given response r and number of trials t, the sigma s is
-%    s = (10^offset*r^slope)/sqrt(t)
+%    s = (10^offset*r^slope)/sqrt(t) (without a constant) OR
+%    s = (offset + k*r^slope)/sqrt(t) (with a constant)
 %
 % That is, it is assumed that the response is the average of the individual
 % response to a number of presentations (num_trials) of a stimulus. The
@@ -21,6 +22,9 @@ function [sigma] = proportional(noise_model, responses, num_trials)
 %        where offset and slope are the parameters of a line in a LOG/LOG
 %        plot of the standard deviation of the response (Y axis) against
 %        the response itself (X axis).
+%     --- OR ---
+%    NOISE_MODEL = [ offset k slope] for the model that includes a constant
+%   
 %    RESPONSES - an N-dimensional vector of averaged response values to use for each
 %        value of sigma to be created
 %    NUM_TRIALS - an N-dimensional vector the number of independent trials
@@ -33,9 +37,17 @@ if ~vlt.data.eqlen(size(responses),size(num_trials)),
     error(['responses and num_trials must have same dimensions.']);
 end;
 
+if numel(noise_model)==2,
+	offset = noise_model(1);
+	slope = noise_model(2);
+	sigma = (10.^offset * responses.^slope);
+elseif numel(noise_model)==3,
+	offset = noise_model(1);
+	k = noise_model(2);
+	slope = noise_model(3);
+	sigma = offset + k * responses.^slope;
+else,
+	error(['Unknown noise model parameter size (expected 2 or 3 parameters).']);
+end;
 
-offset = noise_model(1);
-slope = noise_model(2);
-
-sigma = (10.^offset + responses.^slope)./sqrt(num_trials);
 
