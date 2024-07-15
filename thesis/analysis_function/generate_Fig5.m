@@ -1,6 +1,6 @@
 clear;clc;clf;
 % generate figure 5
-load my_fig5_5.mat
+load my_fig5_5_new.mat
 %%
 I = struct('Rp',linspace(0.1,20,60), ...
     'Op',0:5:359, ...
@@ -18,16 +18,13 @@ for i = 1:numel(data_noisy)
     end
 end
 mdl = fitlm(log10(m),log10(v)),
-figure(100),plot(mdl);
-xlabel('log10(response mean)'),
-ylabel('log10(response stddev)'),
-title('Noise Model'),
 noise_coefficients = mdl.Coefficients{:,1};
+noise_mdl = vis.bayes.noise.fit_proportional_noise_plus_c(m,v,1);
 %%
 % Bayes estimation
 output = [];
 for i = 1:numel(data_noisy)
     for j = 1:numel(data_noisy{i})
-        [output{end+1},~] = bayes_grid_function_proportional_noise_gpu(I,data_noisy{i}(j),noise_coefficients);
+        [output{end+1},~] = bayes_grid_function_proportional_noise_gpu(I,data_noisy{i}(j),noise_mdl);
     end
 end

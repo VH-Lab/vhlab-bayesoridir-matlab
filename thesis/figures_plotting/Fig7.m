@@ -1,7 +1,7 @@
 % Reset workspace and load exist data documents from the file
 clear all;close;clc;
 %load my_fig7_debug_3_before.mat;
-load my_fig7_new_noise_mdl.mat
+load my_fig7_new_kcs.mat
 load stevesolddata.mat;
 if exist("noisy_BME","var")
     noisy_before = noisy_BME;
@@ -51,6 +51,7 @@ end
 %%
 edges = 0:0.05:1;
 center = edges(1:end-1) + (edges(1)+edges(2))/2;
+
 figure(6),hold on;
 for i = 1:5
 plot(center,output(i).descriptors.oi.histogram_likelihoods,'Color',curvecolor{i},'LineWidth',1)
@@ -203,15 +204,15 @@ F7h = figure(8);
 F7i = figure(9);
 F7j = figure(10);
 
-path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs';
+path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
 
-exportgraphics(F7a,[path 'Figure_7a.pdf'],"ContentType","vector"),
-exportgraphics(F7b,[path 'Figure_7b.pdf'],"ContentType","vector"),
-exportgraphics(F7c,[path 'Figure_7c.pdf'],"ContentType","vector"),
-exportgraphics(F7d,[path 'Figure_7d.pdf'],"ContentType","vector"),
-exportgraphics(F7e,[path 'Figure_7e.pdf'],"ContentType","vector"),
-exportgraphics(F7f,[path 'Figure_7f.pdf'],"ContentType","vector"),
-exportgraphics(F7g,[path 'Figure_7g.pdf'],"ContentType","vector"),
-exportgraphics(F7h,[path 'Figure_7h.pdf'],"ContentType","vector"),
-exportgraphics(F7i,[path 'Figure_7i.pdf'],"ContentType","vector"),
-exportgraphics(F7j,[path 'Figure_7j.pdf'],"ContentType","vector"),
+exportgraphics(F7a,[path 'Figure_7a_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F7b,[path 'Figure_7b_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F7c,[path 'Figure_7c_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F7d,[path 'Figure_7d_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F7e,[path 'Figure_7e_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F7f,[path 'Figure_7f_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F7g,[path 'Figure_7g_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F7h,[path 'Figure_7h_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F7i,[path 'Figure_7i_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F7j,[path 'Figure_7j_kcs.pdf'],"ContentType","vector"),

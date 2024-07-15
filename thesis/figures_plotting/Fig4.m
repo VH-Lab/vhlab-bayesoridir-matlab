@@ -1,5 +1,5 @@
-clear all;close;clc;
-load my_fig4_new.mat;
+clear;close;clc;
+load my_fig4_new_kcs.mat
 % Fig 4 - Performance of Bayesian parameter estimation for simulated data
 % of varying orientation tuning(DI).
 
@@ -109,15 +109,15 @@ F4h = figure(8);
 F4i = figure(9);
 F4j = figure(10);
 
-path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs';
+path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
 
-exportgraphics(F4a,[path 'Figure_4a.pdf'],"ContentType","vector"),
-exportgraphics(F4b,[path 'Figure_4b.pdf'],"ContentType","vector"),
-exportgraphics(F4c,[path 'Figure_4c.pdf'],"ContentType","vector"),
-exportgraphics(F4d,[path 'Figure_4d.pdf'],"ContentType","vector"),
-exportgraphics(F4e,[path 'Figure_4e.pdf'],"ContentType","vector"),
-exportgraphics(F4f,[path 'Figure_4f.pdf'],"ContentType","vector"),
-exportgraphics(F4g,[path 'Figure_4g.pdf'],"ContentType","vector"),
-exportgraphics(F4h,[path 'Figure_4h.pdf'],"ContentType","vector"),
-exportgraphics(F4i,[path 'Figure_4i.pdf'],"ContentType","vector"),
-exportgraphics(F4j,[path 'Figure_4j.pdf'],"ContentType","vector"),
+exportgraphics(F4a,[path 'Figure_4a_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F4b,[path 'Figure_4b_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F4c,[path 'Figure_4c_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F4d,[path 'Figure_4d_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F4e,[path 'Figure_4e_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F4f,[path 'Figure_4f_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F4g,[path 'Figure_4g_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F4h,[path 'Figure_4h_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F4i,[path 'Figure_4i_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F4j,[path 'Figure_4j_kcs.pdf'],"ContentType","vector"),

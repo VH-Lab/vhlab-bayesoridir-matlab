@@ -56,6 +56,7 @@ errorbar(noisy_w.angle,noisy_w.mean_responses,noisy_w.responses_stderr,'b*'),%sh
 plot(0:359,bayes_w.maximum_likelihood.parameters.tunning_curve,'r','LineWidth',1),
 xlim([-5,365]),
 ylim([0,20]),
+yticks(0:4:20),
 legend('Ideal','+50% Noise','Bayes Estimation'),
 xlabel('Direction of Stimuli Motion'),
 ylabel('Response(Hz)'),
@@ -68,6 +69,7 @@ errorbar(noisy_p.angle,noisy_p.mean_responses,noisy_p.responses_stderr,'b*'),%sh
 plot(0:359,bayes_p.maximum_likelihood.parameters.tunning_curve,'r','LineWidth',1),
 xlim([-5,365]),
 ylim([0,20]),
+yticks(0:4:20),
 legend('Ideal','+50% Noise','Bayes Estimation'),
 xlabel('Direction of Stimuli Motion'),
 ylabel('Response(Hz)'),
@@ -161,7 +163,7 @@ F1h = figure(8);
 F1i = figure(9);
 F1j = figure(10);
 
-path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs';
+path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
 
 exportgraphics(F1a,[path 'Figure_1a_kcs.pdf'],"ContentType","vector")
 exportgraphics(F1b,[path 'Figure_1b_kcs.pdf'],"ContentType","vector")

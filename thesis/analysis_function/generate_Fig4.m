@@ -1,4 +1,4 @@
-clear all,clc,close all;
+clear,clc,close;
 % test6 -  prediction of different DI value
 %simulated 'true' curves
 % simulate sampling
@@ -47,18 +47,16 @@ for i = 1:cell_num
         m = [m,data_mean{i}(j).mean_responses];
     end
 end
-mdl = fitlm(log10(m),log10(v)),
-figure(),plot(mdl);
-xlabel('log10(response mean)'),
-ylabel('log10(response stddev)')  
-noise_coefficients = mdl.Coefficients{:,1};
+
+noise_mdl = vis.bayes.noise.fit_proportional_noise_plus_c(m,v,1);
+
 %%
 % bayes fitting
 tic
 for i = 1:cell_num
     for j = 1:experiment_num
         fprintf('the fitting is at %d loop.\n',(i-1)*experiment_num + j)
-        [output((i-1)*experiment_num + j),Lik] = bayes_grid_function_proportional_noise_gpu(I,data_mean{i}(j),noise_coefficients);
+        [output((i-1)*experiment_num + j),~] = bayes_grid_function_proportional_noise_gpu(I,data_mean{i}(j),noise_mdl);
         toc;
     end
 end

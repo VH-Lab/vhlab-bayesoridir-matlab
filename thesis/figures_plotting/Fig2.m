@@ -32,12 +32,8 @@ noisy_h = data.generate_noise(ideal_h,5,1);
 % Noise least-square fitting
 m = [noisy_l.mean_responses,noisy_m.mean_responses,noisy_h.mean_responses];
 v = [noisy_l.responses_stddev;noisy_m.responses_stddev;noisy_h.responses_stddev];
-mdl = fitlm(log10(m),log10(v)),
-figure(100),plot(mdl);
-xlabel('log10(response mean)'),
-ylabel('log10(response stddev)'),
-title('Noise Model'),
-noise_coefficients = mdl.Coefficients{:,1};
+
+noise_mdl = vis.bayes.noise.fit_proportional_noise_plus_c(m,v,1);
 %%
 % Bayes Estimate Grid Range and Size
 I = struct('Rp',linspace(0.1,20,60), ...
@@ -48,16 +44,16 @@ I = struct('Rp',linspace(0.1,20,60), ...
 %%
 % Bayes Estimation
 tic,
-[bayes_l,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_l,noise_coefficients);
-[bayes_m,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_m,noise_coefficients);
-[bayes_h,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_h,noise_coefficients);
+[bayes_l,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_l,noise_mdl);
+[bayes_m,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_m,noise_mdl);
+[bayes_h,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_h,noise_mdl);
 toc,
 bayes_l.maximum_likelihood.parameters,
 bayes_m.maximum_likelihood.parameters,
 bayes_h.maximum_likelihood.parameters,
 %%
 clear;close;clc;
-load my_fig2.mat
+load my_fig2_new_kcs.mat
 %%
 figure(1);
 hold on,
@@ -129,10 +125,6 @@ hold off;
 
 edges = 0:0.05:1;
 center = edges(1:end-1) + (edges(1)+edges(2))/2;
-bayes_l_di = sum(reshape(bayes_l.descriptors.di.histogram_likelihoods,5,[]));
-bayes_m_di = sum(reshape(bayes_m.descriptors.di.histogram_likelihoods,5,[]));
-bayes_h_di = sum(reshape(bayes_h.descriptors.di.histogram_likelihoods,5,[]));
-bar1 = [bayes_l_di;bayes_m_di;bayes_h_di]';
 
 figure(6);
 hold on,
@@ -159,11 +151,11 @@ F2d = figure(4);
 F2e = figure(5);
 F2f = figure(6);
 
-path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs';
+path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
 
-exportgraphics(F2a,[path 'Figure_2a.pdf'],"ContentType","vector")
-exportgraphics(F2b,[path 'Figure_2b.pdf'],"ContentType","vector")
-exportgraphics(F2c,[path 'Figure_2c.pdf'],"ContentType","vector")
-exportgraphics(F2d,[path 'Figure_2d.pdf'],"ContentType","vector")
-exportgraphics(F2e,[path 'Figure_2e.pdf'],"ContentType","vector")
-exportgraphics(F2f,[path 'Figure_2f.pdf'],"ContentType","vector")
+exportgraphics(F2a,[path 'Figure_2a_kcs.pdf'],"ContentType","vector")
+exportgraphics(F2b,[path 'Figure_2b_kcs.pdf'],"ContentType","vector")
+exportgraphics(F2c,[path 'Figure_2c_kcs.pdf'],"ContentType","vector")
+exportgraphics(F2d,[path 'Figure_2d_kcs.pdf'],"ContentType","vector")
+exportgraphics(F2e,[path 'Figure_2e_kcs.pdf'],"ContentType","vector")
+exportgraphics(F2f,[path 'Figure_2f_kcs.pdf'],"ContentType","vector")

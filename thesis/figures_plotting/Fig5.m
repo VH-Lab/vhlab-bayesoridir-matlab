@@ -19,7 +19,7 @@ true_di = (rp - rn).*(1 - exp(-0.5*180^2./sigma^2))./(rsp + rp + rn.*exp(-0.5.*1
 curvecolor = {'#0072BD','#77AC30','#EDB120','#7E2F8E','#D95319'};
 titlename = {'A','B','C','D','E'};
 for i = 1:5
-    file_name = ['my_fig5_',int2str(i),'_new.mat'];
+    file_name = ['my_fig5_',int2str(i),'_new_kcs.mat'];
     load(file_name)
     figure(i),hold on;
     plot(data_ideal{1}.angle,data_ideal{1}.responses,'Color',curvecolor{i},'LineWidth',1)
@@ -95,15 +95,15 @@ F5h = figure(8);
 F5i = figure(9);
 F5j = figure(10);
 
-path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs';
+path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
 
-exportgraphics(F5a,[path 'Figure_5a.pdf'],"ContentType","vector"),
-exportgraphics(F5b,[path 'Figure_5b.pdf'],"ContentType","vector"),
-exportgraphics(F5c,[path 'Figure_5c.pdf'],"ContentType","vector"),
-exportgraphics(F5d,[path 'Figure_5d.pdf'],"ContentType","vector"),
-exportgraphics(F5e,[path 'Figure_5e.pdf'],"ContentType","vector"),
-exportgraphics(F5f,[path 'Figure_5f.pdf'],"ContentType","vector"),
-exportgraphics(F5g,[path 'Figure_5g.pdf'],"ContentType","vector"),
-exportgraphics(F5h,[path 'Figure_5h.pdf'],"ContentType","vector"),
-exportgraphics(F5i,[path 'Figure_5i.pdf'],"ContentType","vector"),
-exportgraphics(F5j,[path 'Figure_5j.pdf'],"ContentType","vector"),
+exportgraphics(F5a,[path 'Figure_5a_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F5b,[path 'Figure_5b_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F5c,[path 'Figure_5c_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F5d,[path 'Figure_5d_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F5e,[path 'Figure_5e_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F5f,[path 'Figure_5f_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F5g,[path 'Figure_5g_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F5h,[path 'Figure_5h_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F5i,[path 'Figure_5i_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F5j,[path 'Figure_5j_kcs.pdf'],"ContentType","vector"),
