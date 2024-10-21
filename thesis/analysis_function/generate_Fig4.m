@@ -1,4 +1,5 @@
 clear,clc,close;
+load my_fig4_new_kcs.mat
 % test6 -  prediction of different DI value
 %simulated 'true' curves
 % simulate sampling
@@ -56,6 +57,7 @@ tic
 for i = 1:cell_num
     for j = 1:experiment_num
         fprintf('the fitting is at %d loop.\n',(i-1)*experiment_num + j)
+        data_mean{i}(j).num_trials = measurement_num; % number of simulate trials
         [output((i-1)*experiment_num + j),~] = bayes_grid_function_proportional_noise_gpu(I,data_mean{i}(j),noise_mdl);
         toc;
     end

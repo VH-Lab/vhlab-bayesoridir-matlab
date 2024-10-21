@@ -1,10 +1,10 @@
 % Reset workspace and load exist data documents from the file
-clear all;close;clc;
+clear;close all;clc;
 %load my_fig7_debug_3_before.mat;
-load my_fig7_new_kcs.mat
+load my_fig7_kcs_numtrials.mat
 load stevesolddata.mat;
 if exist("noisy_BME","var")
-    noisy_before = noisy_BME;
+    noisy_before = noisy_BME; 
 end
 %%
 % Fig 7 - Bayes Estimation Result from Real Neuron Dataset
@@ -43,10 +43,11 @@ plot(0:359,output(i).maximum_likelihood.parameters.tunning_curve,'Color',curveco
 xlim([-5,365]),
 ylim([-0.1,0.3]),
 yticks(-0.1:0.1:0.3)
-xlabel('Direction of Stimuli Motion'),
-ylabel('Response(Hz)'),
-legend('V1 Data Points','Bayes Estimation'),
-title(titlename{i});
+set(gca,'FontSize',8),
+xlabel('Direction of Stimuli Motion','FontSize',10),
+ylabel('\Delta F/F','FontSize',10),
+legend('V1 Data Points','Bayes Estimation','FontSize',7),
+title(titlename{i},'FontSize',12);
 end
 %%
 edges = 0:0.05:1;
@@ -57,22 +58,26 @@ for i = 1:5
 plot(center,output(i).descriptors.oi.histogram_likelihoods,'Color',curvecolor{i},'LineWidth',1)
 end
 ylim([-0.02,1]),
+xticks(0:.2:1),
 yticks(0:.2:1),
-xlabel('OI'),
-ylabel('Probability'),
-title('F');
+set(gca,'FontSize',8),
+xlabel('OI','FontSize',10),
+ylabel('Likelihood','FontSize',10),
+title('F','FontSize',12);
 
 figure(7),
 hold on,
 for i = 1:5
 plot(output(i).marginal_likelihood.Rp.values,output(i).marginal_likelihood.Rp.likelihoods,'Color',curvecolor{i},'LineWidth',1),
 end
-xlim([-.01 .31])
+xlim([-.01 .39])
 ylim([-0.02,1]),
+xticks(0:.1:.4),
 yticks(0:.2:1),
-xlabel('R_{p}'),
-ylabel('Probability'),
-title('G');
+set(gca,'FontSize',8),
+xlabel('R_{p}','FontSize',10),
+ylabel('Likelihood','FontSize',10),
+title('G','FontSize',12);
 
 figure(8),
 hold on,
@@ -82,9 +87,10 @@ end
 xlim([0 61])
 ylim([-0.02,1]),
 yticks(0:.2:1),
-xlabel('\sigma'),
-ylabel('Probability'),
-title('H');
+set(gca,'FontSize',8),
+xlabel('\sigma','FontSize',10),
+ylabel('Likelihood','FontSize',10),
+title('H','FontSize',12);
 
 figure(9),
 hold on,
@@ -94,21 +100,23 @@ end
 xlim([-5 365])
 ylim([-0.02,1]),
 yticks(0:.2:1),
-xlabel('\theta_{p}'),
-ylabel('Probability'),
-title('I');
+set(gca,'FontSize',8),
+xlabel('\theta_{pref}','FontSize',10),
+ylabel('Likelihood','FontSize',10),
+title('I','FontSize',12);
 
 figure(10),
 hold on,
 for i = 1:5
 plot(output(i).marginal_likelihood.Rsp.values,output(i).marginal_likelihood.Rsp.likelihoods,'Color',curvecolor{i},'LineWidth',1),
 end
-xlim([-.11 .21])
+xlim([-.13 .13]),
 ylim([-0.02,1]),
 yticks(0:.2:1),
-xlabel('Response Offset'),
-ylabel('Probability'),
-title('J');
+set(gca,'FontSize',8),
+xlabel('C','FontSize',10),
+ylabel('Likelihood','FontSize',10),
+title('J','FontSize',12);
 
 %%
 % To see a list of all response data available
@@ -156,7 +164,7 @@ N = N./sum(N,'all');
 figure(11),
 bar(linspace(-var,var,40),N);
 ylim([0,1]),
-xlabel('Response Offset'),
+xlabel('C'),
 ylabel('Probability'),
 
 N = histc(data_bootsbefore{3}(:,2),linspace(0.001,3*var,60));
@@ -188,7 +196,7 @@ N = N./sum(N,'all');
 figure(15),
 bar(linspace(0,3*var,60),N);
 ylim([0,1]),
-xlabel('R_{null}'),
+xlabel('R_{n}'),
 ylabel('Probability'),
 
 %%
@@ -206,13 +214,13 @@ F7j = figure(10);
 
 path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
 
-exportgraphics(F7a,[path 'Figure_7a_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F7b,[path 'Figure_7b_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F7c,[path 'Figure_7c_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F7d,[path 'Figure_7d_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F7e,[path 'Figure_7e_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F7f,[path 'Figure_7f_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F7g,[path 'Figure_7g_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F7h,[path 'Figure_7h_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F7i,[path 'Figure_7i_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F7j,[path 'Figure_7j_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F7a,[path 'Figure_7a_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F7b,[path 'Figure_7b_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F7c,[path 'Figure_7c_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F7d,[path 'Figure_7d_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F7e,[path 'Figure_7e_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F7f,[path 'Figure_7f_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F7g,[path 'Figure_7g_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F7h,[path 'Figure_7h_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F7i,[path 'Figure_7i_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F7j,[path 'Figure_7j_kcs_numtrials.pdf'],"ContentType","vector"),

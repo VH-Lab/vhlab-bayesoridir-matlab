@@ -1,4 +1,5 @@
-clear all,clc,close all;
+clear,clc,close all;
+load my_fig3_new_kcs.mat
 % test1 - prediction of different OI value
 %simulated 'true' various curves / single curve
 cell_type = 5;
@@ -12,21 +13,21 @@ rsp = linspace(10,0,5);
 %%
 %   generate simulate data
 %   store in cell matrix. one cell one curve.
-for i = 1:cell_type
-    parameters1 = data.generate_fixed_parameters(rp(i),rn(i),45,30,rsp(i));
-    data_ideal{i} = data.generate_simulate_data(ang,parameters1);
-    [data_noisy{i}] = data.generate_noise(data_ideal{i},measurement_num,experiment_num);
-    %plotting
-    figure(),hold on,
-    for j = 1:experiment_num
-        plot(data_ideal{i}.angle,data_ideal{i}.responses,'k','LineWidth',2)
-        errorbar(data_noisy{i}(j).angle,data_noisy{i}(j).mean_responses,data_noisy{i}(j).responses_stderr,'b*')
-        ylim([0,15])
-        xlabel('theta')
-        ylabel('response magnitude')
-        title('simulate tuning curve (+50% noise)')
-    end
-end
+% for i = 1:cell_type
+%     parameters1 = data.generate_fixed_parameters(rp(i),rn(i),45,30,rsp(i));
+%     data_ideal{i} = data.generate_simulate_data(ang,parameters1);
+%     [data_noisy{i}] = data.generate_noise(data_ideal{i},measurement_num,experiment_num);
+%     %plotting
+%     figure(),hold on,
+%     for j = 1:experiment_num
+%         plot(data_ideal{i}.angle,data_ideal{i}.responses,'k','LineWidth',2)
+%         errorbar(data_noisy{i}(j).angle,data_noisy{i}(j).mean_responses,data_noisy{i}(j).responses_stderr,'b*')
+%         ylim([0,15])
+%         xlabel('theta')
+%         ylabel('response magnitude')
+%         title('simulate tuning curve (+50% noise)')
+%     end
+% end
 %%
 %noise fitting model
 m = [];
@@ -52,8 +53,9 @@ tic
 for i = 1:cell_type
     for j = 1:experiment_num
         fprintf('the fitting is at %d loop.\n',(i-1)*experiment_num + j)
+        data_noisy{i}(j).num_trials = measurement_num; % number of simulate trials
         [output((i-1)*experiment_num + j),~] = bayes_grid_function_proportional_noise_gpu(I,data_noisy{i}(j),noise_mdl);
         toc;
     end
 end
- 
+clear i j;

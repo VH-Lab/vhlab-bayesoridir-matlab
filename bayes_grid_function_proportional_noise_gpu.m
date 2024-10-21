@@ -28,15 +28,15 @@ oi = gpuArray(zeros(length(grid_size.Rp),length(grid_size.Alpha),length(grid_siz
 [rp_expanded,op_expanded,alpha_expanded,sig_expanded] = ndgrid(gpuArray(grid_size.Rp),gpuArray(grid_size.Op),gpuArray(grid_size.Alpha),gpuArray(grid_size.Sig));
 data_angle_expanded = gpuArray(reshape(data.angle, 1, 1, 1, 1, []));
 data_mean_expanded = gpuArray(reshape(data.mean_responses', 1, 1, 1, 1, []));
+num_trials = gpuArray(data.num_trials * ones([size(rp_expanded) numel(data_angle_expanded)]));
 for rsp = 1:length(grid_size.Rsp)
     fprintf('This loop round left: %d \n',length(grid_size.Rsp)+1-rsp);
     fitting_rsp_v = grid_size.Rsp(rsp) + rp_expanded .* exp(-0.5 * angdiff(data_angle_expanded - op_expanded) .^ 2 ./ sig_expanded .^ 2) + alpha_expanded .* rp_expanded .* exp(-0.5 * angdiff(data_angle_expanded - (op_expanded + 180)) .^ 2 ./ sig_expanded .^ 2);
-    
-    noise_sigma = vis.bayes.noise.proportional(noise_mdl,abs(fitting_rsp_v),abs(fitting_rsp_v));
+    noise_sigma = vis.bayes.noise.proportional(noise_mdl,abs(fitting_rsp_v),num_trials);
     prsp = normpdf(data_mean_expanded,fitting_rsp_v,noise_sigma);
     multiprsp = squeeze(prod(prsp,5));
     Lik(:,:,:,:,rsp) = multiprsp;
-
+    clear fitting_rsp_v noise_sigma prsp multiprsp;
     %circular variance and direction circular variance
     % dir_angle = (0:5:359)';
     % dir_angle_expanded = gpuArray(reshape(dir_angle, 1, 1, 1, 1, 1, []));

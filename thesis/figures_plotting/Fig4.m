@@ -1,5 +1,5 @@
 clear;close;clc;
-load my_fig4_new_kcs.mat
+load my_fig4_kcs_numtrials.mat
 % Fig 4 - Performance of Bayesian parameter estimation for simulated data
 % of varying orientation tuning(DI).
 
@@ -34,10 +34,11 @@ xlim([-5,365]),
 ylim([-.5,20]),
 xticks(0:100:300),
 yticks(0:4:20),
-xlabel('Direction of Stimuli Motion'),
-ylabel('Response(Hz)'),
-legend('Ideal','+50% Noise','Bayes Estimation'),
-title(titlename{i});
+set(gca,'FontSize',8),
+xlabel('Direction of Stimuli Motion','FontSize',10),
+ylabel('Response(Hz)','FontSize',10),
+legend('Ideal','+50% Noise','Bayes Estimation','FontSize',7),
+title(titlename{i},'FontSize',12);
 end
 %%
 edges = 0:0.05:1;
@@ -47,10 +48,12 @@ for i = 1:5
 plot(center,output(i*10-3).descriptors.di.histogram_likelihoods,'Color',curvecolor{i},'LineWidth',1)
 end
 ylim([-0.02,1]),
+xticks(0:.2:1),
 yticks(0:.2:1),
-xlabel('DI'),
-ylabel('Probability'),
-title('F');
+set(gca,'FontSize',8),
+xlabel('DI','FontSize',10),
+ylabel('Likelihood','FontSize',10),
+title('F','FontSize',12);
 
 figure(7),
 hold on,
@@ -58,10 +61,12 @@ for i = 1:5
 plot(output(i*10-3).marginal_likelihood.Rp.values,output(i*10-3).marginal_likelihood.Rp.likelihoods,'Color',curvecolor{i},'LineWidth',1),
 end
 ylim([-0.02,1]),
+xticks(0:5:20), 
 yticks(0:.2:1),
-xlabel('R_{p}'),
-ylabel('Probability'),
-title('G');
+set(gca,'FontSize',8),
+xlabel('R_{p}','FontSize',10),
+ylabel('Likelihood','FontSize',10),
+title('G','FontSize',12);
 
 figure(8),
 hold on,
@@ -70,9 +75,10 @@ plot(output(i*10-3).marginal_likelihood.sigma.values,output(i*10-3).marginal_lik
 end
 ylim([-0.02,1]),
 yticks(0:.2:1),
-xlabel('\sigma'),
-ylabel('Probability'),
-title('H');
+set(gca,'FontSize',8),
+xlabel('\sigma','FontSize',10),
+ylabel('Likelihood','FontSize',10),
+title('H','FontSize',12);
 
 figure(9),
 hold on,
@@ -82,9 +88,10 @@ end
 xlim([-5,365]),
 ylim([-0.02,1]),
 yticks(0:.2:1),
-xlabel('\theta_{p}'),
-ylabel('Probability'),
-title('I');
+set(gca,'FontSize',8),
+xlabel('\theta_{pref}','FontSize',10),
+ylabel('Likelihood','FontSize',10),
+title('I','FontSize',12);
 
 figure(10),
 hold on,
@@ -92,10 +99,12 @@ for i = 1:5
 plot(output(i*10-3).marginal_likelihood.Rsp.values,output(i*10-3).marginal_likelihood.Rsp.likelihoods,'Color',curvecolor{i},'LineWidth',1),
 end
 ylim([-0.02,1]),
+xticks(0:2:10),
 yticks(0:.2:1),
-xlabel('Response Offset'),
-ylabel('Probability'),
-title('J');
+set(gca,'FontSize',8),
+xlabel('C','FontSize',10),
+ylabel('Likelihood','FontSize',10),
+title('J','FontSize',12);
 %%
 % export figures
 F4a = figure(1);
@@ -111,13 +120,13 @@ F4j = figure(10);
 
 path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
 
-exportgraphics(F4a,[path 'Figure_4a_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F4b,[path 'Figure_4b_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F4c,[path 'Figure_4c_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F4d,[path 'Figure_4d_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F4e,[path 'Figure_4e_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F4f,[path 'Figure_4f_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F4g,[path 'Figure_4g_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F4h,[path 'Figure_4h_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F4i,[path 'Figure_4i_kcs.pdf'],"ContentType","vector"),
-exportgraphics(F4j,[path 'Figure_4j_kcs.pdf'],"ContentType","vector"),
+exportgraphics(F4a,[path 'Figure_4a_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F4b,[path 'Figure_4b_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F4c,[path 'Figure_4c_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F4d,[path 'Figure_4d_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F4e,[path 'Figure_4e_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F4f,[path 'Figure_4f_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F4g,[path 'Figure_4g_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F4h,[path 'Figure_4h_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F4i,[path 'Figure_4i_kcs_numtrials.pdf'],"ContentType","vector"),
+exportgraphics(F4j,[path 'Figure_4j_kcs_numtrials.pdf'],"ContentType","vector"),

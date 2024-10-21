@@ -1,6 +1,6 @@
 clear;clc;clf;
 % generate figure 5
-load my_fig5_5_new.mat
+load my_fig5_1_new_kcs.mat
 %%
 I = struct('Rp',linspace(0.1,20,60), ...
     'Op',0:5:359, ...
@@ -25,6 +25,8 @@ noise_mdl = vis.bayes.noise.fit_proportional_noise_plus_c(m,v,1);
 output = [];
 for i = 1:numel(data_noisy)
     for j = 1:numel(data_noisy{i})
+        data_noisy{i}(j).num_trials = 5; % number of simulate trials
         [output{end+1},~] = bayes_grid_function_proportional_noise_gpu(I,data_noisy{i}(j),noise_mdl);
     end
 end
+clear i j;
