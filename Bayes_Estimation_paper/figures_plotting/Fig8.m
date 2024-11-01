@@ -13,7 +13,7 @@ output_BME = output;
 clear output I noisy_before
 
 % Bayes fitting - 06082024
-load my_fig8_kcs_AME_numtrials.mat
+load my_fig8_kcs_AME_moreOp.mat
 
 output_AME = output;
 
@@ -214,7 +214,7 @@ for i = 1:numel(data_bootsAME),
     var = max(noisy_AME(i).mean_responses);
 
     I_AME = struct('Rp',linspace(0.001,3*var,60), ...
-        'Op',0:5:359, ...
+        'Op',0:1:359, ...
         'Alpha',linspace(0,1,21), ...
         'Sig',linspace(1,60,60), ...
         'Rsp',linspace(-var,var,60), ...
@@ -224,7 +224,7 @@ for i = 1:numel(data_bootsAME),
     rsp_N = rsp_N./sum(rsp_N,'all');
     rp_N = histc(data_bootsAME{i}(:,2),linspace(0.001,3*var,60));
     rp_N = rp_N./sum(rp_N,'all');
-    op_N = histc(data_bootsAME{i}(:,3),0:5:359);
+    op_N = histc(data_bootsAME{i}(:,3),0:1:359);
     op_N = op_N./sum(op_N,'all');
     sig_N = histc(data_bootsAME{i}(:,4),linspace(1,60,60));
     sig_N = sig_N./sum(sig_N,'all');
@@ -234,8 +234,8 @@ for i = 1:numel(data_bootsAME),
     if ismember(i,best_pick_cells)
         figure(i),
         nexttile,hold on,
-        plot(0:5:359,output_AME(i).marginal_likelihood.theta_pref.likelihoods,'r','LineWidth',1)
-        plot(0:5:359,op_N,'r--','LineWidth',1)
+        plot(0:1:359,output_AME(i).marginal_likelihood.theta_pref.likelihoods,'r','LineWidth',1)
+        plot(0:1:359,op_N,'r--','LineWidth',1)
         xlim([-5 365])
         ylim([0,1])
         set(gca,'FontSize',8)
@@ -382,22 +382,22 @@ ylabel('ML of R_{n} from Bayes','FontSize',10)
 title('K','FontSize',12);
 %%
 % export figures
-F8a = figure(32);
-F8b = figure(40);
-F8c = figure(120);
-F8d = figure(1);
-F8e = figure(2);
-F8f = figure(3);
-F8g = figure(4);
-F8h = figure(5);
-
-path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
-
-exportgraphics(F8a,[path 'Figure_8ab_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F8b,[path 'Figure_8cd_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F8c,[path 'Figure_8ef_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F8d,[path 'Figure_8g_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F8e,[path 'Figure_8h_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F8f,[path 'Figure_8i_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F8g,[path 'Figure_8j_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F8h,[path 'Figure_8k_kcs_numtrials.pdf'],"ContentType","vector"),
+% F8a = figure(32);
+% F8b = figure(40);
+% F8c = figure(120);
+% F8d = figure(1);
+% F8e = figure(2);
+% F8f = figure(3);
+% F8g = figure(4);
+% F8h = figure(5);
+% 
+% path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
+% 
+% exportgraphics(F8a,[path 'Figure_8ab_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F8b,[path 'Figure_8cd_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F8c,[path 'Figure_8ef_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F8d,[path 'Figure_8g_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F8e,[path 'Figure_8h_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F8f,[path 'Figure_8i_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F8g,[path 'Figure_8j_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F8h,[path 'Figure_8k_kcs_numtrials.pdf'],"ContentType","vector"),

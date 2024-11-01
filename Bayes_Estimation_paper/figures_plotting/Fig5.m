@@ -93,26 +93,26 @@ end
 
 %%
 % export figures
-F5a = figure(1);
-F5b = figure(2);
-F5c = figure(3);
-F5d = figure(4);
-F5e = figure(5);
-F5f = figure(6);
-F5g = figure(7);
-F5h = figure(8);
-F5i = figure(9);
-F5j = figure(10);
-
-path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
-
-exportgraphics(F5a,[path 'Figure_5a_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F5b,[path 'Figure_5b_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F5c,[path 'Figure_5c_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F5d,[path 'Figure_5d_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F5e,[path 'Figure_5e_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F5f,[path 'Figure_5f_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F5g,[path 'Figure_5g_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F5h,[path 'Figure_5h_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F5i,[path 'Figure_5i_kcs_numtrials.pdf'],"ContentType","vector"),
-exportgraphics(F5j,[path 'Figure_5j_kcs_numtrials.pdf'],"ContentType","vector"),
+% F5a = figure(1);
+% F5b = figure(2);
+% F5c = figure(3);
+% F5d = figure(4);
+% F5e = figure(5);
+% F5f = figure(6);
+% F5g = figure(7);
+% F5h = figure(8);
+% F5i = figure(9);
+% F5j = figure(10);
+% 
+% path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
+% 
+% exportgraphics(F5a,[path 'Figure_5a_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F5b,[path 'Figure_5b_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F5c,[path 'Figure_5c_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F5d,[path 'Figure_5d_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F5e,[path 'Figure_5e_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F5f,[path 'Figure_5f_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F5g,[path 'Figure_5g_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F5h,[path 'Figure_5h_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F5i,[path 'Figure_5i_kcs_numtrials.pdf'],"ContentType","vector"),
+% exportgraphics(F5j,[path 'Figure_5j_kcs_numtrials.pdf'],"ContentType","vector"),
