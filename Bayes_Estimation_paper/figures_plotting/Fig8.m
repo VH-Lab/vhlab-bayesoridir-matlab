@@ -6,7 +6,7 @@ clear;close all;clc;
 % theta_pref.
 
 % Bayes fitting - 06082024
-load my_fig8_kcs_BME_numtrials.mat
+load my_fig8_kcs_BME_moreOp.mat
 
 output_BME = output;
 
@@ -105,7 +105,7 @@ for i = 1:numel(data_bootsBME),
     var = max(noisy_BME(i).mean_responses);
 
     I_BME = struct('Rp',linspace(0.001,3*var,60), ...
-        'Op',0:5:359, ...
+        'Op',0:1:359, ...
         'Alpha',linspace(0,1,21), ...
         'Sig',linspace(1,60,60), ...
         'Rsp',linspace(-var,var,60), ...
@@ -115,7 +115,7 @@ for i = 1:numel(data_bootsBME),
     rsp_N = rsp_N./sum(rsp_N,'all');
     rp_N = histc(data_bootsBME{i}(:,2),linspace(0.001,3*var,60));
     rp_N = rp_N./sum(rp_N,'all');
-    op_N = histc(data_bootsBME{i}(:,3),0:5:359);
+    op_N = histc(data_bootsBME{i}(:,3),0:1:359);
     op_N = op_N./sum(op_N,'all');
     sig_N = histc(data_bootsBME{i}(:,4),linspace(1,60,60));
     sig_N = sig_N./sum(sig_N,'all');
@@ -126,8 +126,8 @@ for i = 1:numel(data_bootsBME),
         figure(i),
         tiledlayout("vertical"),
         nexttile,hold on,
-        plot(0:5:359,output_BME(i).marginal_likelihood.theta_pref.likelihoods,'b','LineWidth',1)
-        plot(0:5:359,op_N,'b--','LineWidth',1)
+        plot(0:1:359,output_BME(i).marginal_likelihood.theta_pref.likelihoods,'b','LineWidth',1)
+        plot(0:1:359,op_N,'b--','LineWidth',1)
         xlim([-5 365])
         ylim([0,1])
         set(gca,'FontSize',8)
