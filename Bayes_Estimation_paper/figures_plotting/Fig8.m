@@ -382,22 +382,22 @@ ylabel('ML of R_{n} from Bayes','FontSize',10)
 title('K','FontSize',12);
 %%
 % export figures
-% F8a = figure(32);
-% F8b = figure(40);
-% F8c = figure(120);
-% F8d = figure(1);
-% F8e = figure(2);
-% F8f = figure(3);
-% F8g = figure(4);
-% F8h = figure(5);
-% 
-% path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
-% 
-% exportgraphics(F8a,[path 'Figure_8ab_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F8b,[path 'Figure_8cd_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F8c,[path 'Figure_8ef_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F8d,[path 'Figure_8g_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F8e,[path 'Figure_8h_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F8f,[path 'Figure_8i_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F8g,[path 'Figure_8j_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F8h,[path 'Figure_8k_kcs_numtrials.pdf'],"ContentType","vector"),
+F8a = figure(32);
+F8b = figure(40);
+F8c = figure(120);
+F8d = figure(1);
+F8e = figure(2);
+F8f = figure(3);
+F8g = figure(4);
+F8h = figure(5);
+
+path = 'D:\GitHub\vhlab-bayesoridir-matlab\Bayes_Estimation_paper\figures\noise_mdl\kcs';
+
+exportgraphics(F8a,[path 'Figure_8ab_kcs_numtrials_Steve.pdf'],"ContentType","vector"),
+exportgraphics(F8b,[path 'Figure_8cd_kcs_numtrials_Steve.pdf'],"ContentType","vector"),
+exportgraphics(F8c,[path 'Figure_8ef_kcs_numtrials_Steve.pdf'],"ContentType","vector"),
+exportgraphics(F8d,[path 'Figure_8g_kcs_numtrials_Steve.pdf'],"ContentType","vector"),
+exportgraphics(F8e,[path 'Figure_8h_kcs_numtrials_Steve.pdf'],"ContentType","vector"),
+exportgraphics(F8f,[path 'Figure_8i_kcs_numtrials_Steve.pdf'],"ContentType","vector"),
+exportgraphics(F8g,[path 'Figure_8j_kcs_numtrials_Steve.pdf'],"ContentType","vector"),
+exportgraphics(F8h,[path 'Figure_8k_kcs_numtrials_Steve.pdf'],"ContentType","vector"),
