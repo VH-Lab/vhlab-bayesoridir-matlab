@@ -53,7 +53,7 @@ resp_struct = struct('angles',angles(:),...
   % or force running on CPU
 %[output_struct,lik] = vis.bayes.double_gaussian.grid_proportional_noise(param_grid, resp_struct, noise_model,'useCPU',1,'verbose',1);
 
-vis.bayes.double_guassian.plot_results(output_struct);
+vis.bayes.double_gaussian.plot_results(output_struct);
 ```
 
 2. Research-grade parameter space exploration example (GPU strongly recommended):
@@ -87,7 +87,7 @@ resp_struct = struct('angles',angles(:),...
     'mean_responses',resps(:),...
     'num_trials',5*ones(size(resps(:))));
 
-[output_struct,lik] = vis.bayes.double_gaussian.grid_proportional_noise(param_grid, resp_struct, noise_model,'verbose',1);
+[output_struct,lik] = vis.bayes.double_guassian.grid_proportional_noise(param_grid, resp_struct, noise_model,'verbose',1);
 
 vis.bayes.double_guassian.plot_results(output_struct);
 ```
