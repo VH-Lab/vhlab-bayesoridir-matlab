@@ -1,0 +1,162 @@
+#include <metal_stdlib>
+using namespace metal;
+
+constant float PI = 3.141592653589793;
+
+kernel void doubleGaussianProportionalNoiseLog(
+    device float *lik [[ buffer(0) ]],
+    constant float *angles_response_numtrials [[ buffer(1) ]],
+    constant float *grid [[ buffer(2) ]], 
+    constant float *noise_model [[ buffer(3) ]], 
+    constant float *bin_values[[ buffer(4) ]],
+    device float *histogram_index[[ buffer(5) ]],
+    device float *answers [[ buffer(6) ]],
+    uint id[[ thread_position_in_grid ]])
+{
+
+   // extract grid dimensions 
+   uint num_rsp = grid[0];
+   uint num_rp = grid[1];
+   uint num_alpha = grid[2];
+   uint num_thetapref = grid[3];
+   uint num_sig = grid[4];
+
+   uint num_angles = angles_response_numtrials[0];
+   float f_eval,theta,r,numtrials,noise_sigma,lik_here,log_likelihood=0;
+   float angdiff1,angdiff2,dtheta;
+
+   uint lik_is_zero = 0;
+
+   // find the index of each grid point to evaluate
+
+   uint index_rsp = id % num_rsp;
+   uint index_rp = (id / num_rsp) % num_rp;
+   uint index_alpha = id / (num_rp * num_rsp) % num_alpha;
+   uint index_thetapref = id / (num_alpha * num_rp * num_rsp) % num_thetapref;
+   uint index_sig = id / (num_thetapref * num_alpha * num_rp * num_rsp) % num_sig;
+
+   // grab the value of each variable
+
+   float rsp       = grid[5+index_rsp];
+   float rp        = grid[5+num_rsp+index_rp];
+   float alpha     = grid[5+num_rsp+num_rp+index_alpha];
+   float thetapref = grid[5+num_rsp+num_rp+num_alpha+index_thetapref];
+   float sig       = grid[5+num_rsp+num_rp+num_alpha+num_thetapref+index_sig];
+
+   float cv_numerator_x = 0, cv_numerator_y = 0;
+   float dcv_numerator_x = 0, dcv_numerator_y = 0;
+   float cv_denominator = 0;
+   float oi_here, di_here, cv_here, dcv_here;
+
+   for (uint i=0; i<num_angles;i++) {
+      theta = angles_response_numtrials[1+i];
+      r = angles_response_numtrials[1+num_angles+i];
+      numtrials = angles_response_numtrials[1+2*num_angles+i];
+      dtheta = theta - thetapref;
+      angdiff1 = fmin(abs(dtheta-360),fmin(abs(dtheta),abs(dtheta+360)));
+      dtheta = theta + 180 - thetapref;
+      angdiff2 = fmin(abs(dtheta-360),fmin(abs(dtheta),abs(dtheta+360)));
+      f_eval = rsp + rp * exp(-angdiff1*angdiff1/(2*sig*sig)) + alpha * rp * exp(-angdiff2*angdiff2/(2*sig*sig));
+      cv_denominator  += f_eval;
+      cv_numerator_x  += f_eval * cos(2*theta*PI/180.0);
+      cv_numerator_y  += f_eval * sin(2*theta*PI/180.0);
+      dcv_numerator_x += f_eval * cos(theta*PI/180.0);
+      dcv_numerator_y += f_eval * sin(theta*PI/180.0);
+      if (rsp==0.1 && rp == 10 && alpha == 0.5 && thetapref == 40 && sig == 30) answers[i] = f_eval;
+      if (noise_model[0] == 1) {
+        noise_sigma = pow(10,noise_model[2]) * pow(abs(f_eval),noise_model[3])/sqrt(numtrials);
+      } else {
+        noise_sigma = (noise_model[1] + noise_model[2] * pow(abs(f_eval),noise_model[3]))/sqrt(numtrials);
+      }
+      if (rsp==0.1 && rp == 10 && alpha == 0.5 && thetapref == 40 && sig == 30) answers[15+i] = noise_sigma;
+      if (noise_sigma>0) {
+        lik_here = exp(-pow((f_eval-r),2)/(2*noise_sigma*noise_sigma))/(noise_sigma*sqrt(2*PI));
+        answers[22+i] = lik_here;
+        log_likelihood += log10(lik_here);
+      } else {
+        lik_is_zero = 1;
+        answers[22+i] = 10;
+        break;
+      }
+   }
+   lik[id] = lik_is_zero ? 10 : log_likelihood;
+   cv_here = 1-(sqrt(cv_numerator_x*cv_numerator_x+cv_numerator_y*cv_numerator_y) / cv_denominator);
+   dcv_here = 1-(sqrt(dcv_numerator_x*dcv_numerator_x+dcv_numerator_y*dcv_numerator_y) / cv_denominator);
+   dcv_here = fmin(dcv_here,1);
+
+   // to calculate oi and di, need r(theta_p), r(theta_p+180), r(theta_p+90)
+   // r(theta_p)
+   angdiff1 = 0;
+   angdiff2 = 180;
+   float r_at_thetap = rsp + rp * exp(-angdiff1*angdiff1/(2*sig*sig)) + alpha * rp * exp(-angdiff2*angdiff2/(2*sig*sig));
+   angdiff1 = 90;
+   angdiff2 = 90;
+   float r_at_thetap_90 = rsp + rp * exp(-angdiff1*angdiff1/(2*sig*sig)) + alpha * rp * exp(-angdiff2*angdiff2/(2*sig*sig));
+   angdiff1 = 180;
+   angdiff2 = 0;
+   float r_at_thetap_180 = rsp + rp * exp(-angdiff1*angdiff1/(2*sig*sig)) + alpha * rp * exp(-angdiff2*angdiff2/(2*sig*sig));
+   oi_here = (r_at_thetap + r_at_thetap_180 - 2*r_at_thetap_90) / (r_at_thetap + r_at_thetap_180 + 2*r_at_thetap_90);
+   if (isnan(oi_here) || isinf(oi_here)) oi_here = 0.0;
+   di_here = (r_at_thetap - r_at_thetap_180 )/ (r_at_thetap + r_at_thetap_180 );
+   if (isnan(di_here) || isinf(di_here)) di_here = 0.0;
+
+   int N = 4;
+
+   float values[4];
+   values[0] = oi_here;
+   values[1] = di_here;
+   values[2] = cv_here;
+   values[3] = dcv_here;
+   uint16_t bin_labels[4];
+   
+   // Calculate the stride for each dimension (for indexing the multi-dimensional matrix)
+   float stride = 1;
+   float index = 1;
+   int bin_offset = 0;
+   for (int i = 0; i < N; i++) {
+     int num_bins = (int)bin_values[i];
+     float value = values[i];
+    
+     // Binary search for the correct bin
+     int left = 0;
+     int right = num_bins - 1;
+     int mid;
+     int bin_index = num_bins; // Default to out-of-bounds bin
+    
+     while (left <= right) {
+       mid = left + (right - left) / 2;
+       if (value >= bin_values[N + bin_offset + mid] && value < bin_values[N + bin_offset + mid + 1]) {
+         bin_index = mid;
+         break;
+       } else if (value >= bin_values[N + bin_offset + mid] && (mid==num_bins-1)) { // if we are at the edge we found it
+         bin_index = mid;
+         break;
+       } else if (value < bin_values[N + bin_offset + mid]) {
+         right = mid - 1;
+       } else {
+         left = mid + 1;
+       }
+     }
+     // Check if the value is greater than the last bin edge
+     if (value > bin_values[N + bin_offset + num_bins - 1]) {
+         bin_index = num_bins; // Out-of-bounds for values greater than the last bin
+         if (value==1) answers[96] = bin_labels[i];
+     }
+     bin_labels[i] = bin_index + 1; // add one to get answer in Matlab bins
+     if (value==1) {
+         answers[89] = 5;
+         answers[90] = bin_values[N + bin_offset + mid];
+         answers[91] = bin_values[N + bin_offset + mid + 1];
+         answers[97] = bin_labels[i];
+         answers[98] = bin_values[N + bin_offset + num_bins - 1];
+     }
+
+     index += (bin_labels[i]-1) * stride;
+     stride *= (num_bins+1); // we have an extra bin for the out-of-bounds
+     bin_offset += num_bins; // we don't have an set in the bin_values
+  }
+
+   histogram_index[id] = index;
+}
+
+
