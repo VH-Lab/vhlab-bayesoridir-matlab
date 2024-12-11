@@ -91,4 +91,8 @@ resp_struct = struct('angles',angles(:),...
 vis.bayes.double_guassian.plot_results(output_struct);
 ```
 
+## Material related to the paper
+
+The code to produce all figures of Wu and Van Hooser 2024/2025 is in the folder `Bayes_Estimation_paper`.
+
 
