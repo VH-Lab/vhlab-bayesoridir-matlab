@@ -7,3 +7,13 @@
 *.asv
 *.m~
 __pycache__
+thesis/data/stevesolddata.README.txt
+thesis/data/stevesolddata.mat
+thesis/Figure1.mat
+thesis/Figure2.mat
+/thesis/figures
+/thesis/citations
+thesis/log/06052024_cpf.mat
+thesis/06042024.mat
+Bayes_Estimation_paper/analysis_data/my_fig8_kcs_AME_moreOp.mat
+Bayes_Estimation_paper/analysis_data/my_fig8_kcs_BME_moreOp.mat

@@ -4,7 +4,7 @@ figure(),plot(output_struct.marginal_likelihood.Rp.values,output_struct.marginal
 xlabel("Rpref(Hz)"),
 ylabel("probability of Rpref");
 1
-figure(),plot(output_struct.marginal_likelihood.Rn.values,output_struct.marginal_likelihood.Rn.likelihoods),
+figure(),plot(output_struct.marginal_likelihood.Alpha.values,output_struct.marginal_likelihood.Alpha.likelihoods),
 xlabel("alpha"),
 ylabel("probability of alpha");
 2
@@ -20,7 +20,4 @@ figure(),plot(output_struct.marginal_likelihood.Rsp.values,output_struct.margina
 xlabel("Rsp"),
 ylabel("probability of Rsp");
 5
-figure(),plot(output_struct.descriptors.oi.values,output_struct.descriptors.oi.likelihoods),
-xlabel("Orientation Index"),
-ylabel("probability of Orientation Index");
 end

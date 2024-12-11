@@ -23,5 +23,7 @@ for i=1:numel(dirinfo),
     t = find(tfs==dirinfo(i).tf);
     hold on;
     plot( (t-1)*(dx+X_total)+dirinfo(i).angle, (s-1)*(dy+1)+dirinfo(i).mean_responses/M );
+    ylabel('spacial')
+    xlabel('temporal')
 end;
 
