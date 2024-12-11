@@ -6,7 +6,7 @@ As described in Wu and Van Hooser (2024/2025), this library performs a full Baye
 
 The parameters that are estimated are $Rsp$, $Rp$, $Rn$, $\theta_{pref}$, and $\sigma$ in the following equation:
 
-
+$$R(\theta) = Rsp + Rp * exp(-\text{angdiff}(\theta-\theta_{pref})^2/2\sigma^2) + Rn * exp(-\text{angdiff}(\theta-\theta_{pref}+180)^2/2\sigma^2)
 
 ## Requirements
 
