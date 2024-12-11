@@ -14,7 +14,7 @@ where $\text{angdiff}(\theta)$ is the absolute angular difference, $Rsp$ is the 
 
 - [vhlab-toolbox-matlab](https://github.com/VH-Lab/vhlab-toolbox-matlab)
 - [MatlabMetal](https://github.com/stevevanhooser/MatlabMetal)
-- Make sure that vhlab-bayesoridir-matlab is on the path
+- Make sure that `vhlab-bayesoridir-matlab` is on the path
 
 ## Examples
 
