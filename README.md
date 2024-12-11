@@ -18,7 +18,7 @@ where $\text{angdiff}(\theta)$ is the absolute angular difference, $Rsp$ is the 
 
 ## Examples
 
-1. Small example to explore the fitting:
+1. Small example to explore the parameter estimation:
 
 ```[matlab]
 
