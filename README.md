@@ -20,34 +20,23 @@ where $\text{angdiff}(\theta)$ is the absolute angular difference, $Rsp$ is the 
 
 1. Small example to explore the parameter estimation:
 
-```[matlab]
-
+```Matlab
 % example equation
 angles = [ 0:30:360-30 ];
 P = [ 0.5 10 5 45 30 ]; % [Rsp Rp Rn theta_pref sigma] 
 resps = vis.oridir.doublegaussianfunc(angles,P); % raw data
 
+resp_struct = struct('angles',angles(:),...
+    'mean_responses',resps(:),...
+    'num_trials',5*ones(size(resps(:))));
+
   %the parameter values to explore
-rsp_values = sort([logspace(log10(0.1),log10(40),40)]);
-rp_values = logspace(log10(0.1),log10(150),20);
-alpha_values = 0:0.05:1;
-thetap_values = 0:5:359;
-sig_values = 10:5:90;
+param_grid = vis.bayes.double_gaussian.parameter_space('explore');
 
 % We use a noise model where the expected noise of the spike response
 % depends on the mean response of the neuron
 % noise model: N = C + K * M^S, where M is the mean response of neuron
 noise_model = [1.3549 1.9182 0.5461]; % [C K S]
-
-param_grid = struct('Rsp',rsp_values,...
-    'Rp',rp_values,...
-    'Alpha',alpha_values,...
-    'Op',thetap_values,...
-    'Sig',sig_values);
-
-resp_struct = struct('angles',angles(:),...
-    'mean_responses',resps(:),...
-    'num_trials',5*ones(size(resps(:))));
 
 [output_struct,lik] = vis.bayes.double_gaussian.grid_proportional_noise(param_grid, resp_struct, noise_model,'verbose',1);
   % or force running on CPU
@@ -58,34 +47,22 @@ vis.bayes.double_gaussian.plot_results(output_struct);
 
 2. Research-grade parameter space exploration example (GPU strongly recommended):
 
-```[matlab]
-
-% example equation
+```Matlab
 angles = [ 0:30:360-30 ];
 P = [ 0.5 10 5 45 30 ]; % [Rsp Rp Rn theta_pref sigma] 
 resps = vis.oridir.doublegaussianfunc(angles,P); % raw data
 
+resp_struct = struct('angles',angles(:),...
+    'mean_responses',resps(:),...
+    'num_trials',5*ones(size(resps(:))));
+
   %the parameter values to explore
-rsp_values = sort([logspace(log10(0.1),log10(40),40)]);
-rp_values = logspace(log10(0.1),log10(150),100);
-alpha_values = 0:0.05:1;
-thetap_values = 0:2:359;
-sig_values = 10:5:90;
+param_grid = vis.bayes.double_gaussian.parameter_space('research-grade');
 
 % We use a noise model where the expected noise of the spike response
 % depends on the mean response of the neuron
 % noise model: N = C + K * M^S, where M is the mean response of neuron
 noise_model = [1.3549 1.9182 0.5461]; % [C K S]
-
-param_grid = struct('Rsp',rsp_values,...
-    'Rp',rp_values,...
-    'Alpha',alpha_values,...
-    'Op',thetap_values,...
-    'Sig',sig_values);
-
-resp_struct = struct('angles',angles(:),...
-    'mean_responses',resps(:),...
-    'num_trials',5*ones(size(resps(:))));
 
 [output_struct,lik] = vis.bayes.double_gaussian.grid_proportional_noise(param_grid, resp_struct, noise_model,'verbose',1);
 
