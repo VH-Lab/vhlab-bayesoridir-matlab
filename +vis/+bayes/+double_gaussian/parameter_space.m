@@ -33,7 +33,7 @@ arguments
 end
 
 if strcmp(description,'research-grade')
-    rsp_values = sort([logspace(log10(0.1),log10(40),40)]);
+    rsp_values = sort([-logspace(log10(0.1),log10(40),20) logspace(log10(0.1),log10(40),20)]);
     rp_values = logspace(log10(0.1),log10(150),100);
     alpha_values = 0:0.05:1;
     thetap_values = 0:2:359;
@@ -41,7 +41,7 @@ if strcmp(description,'research-grade')
 end
 
 if strcmp(description,'explore')
-    rsp_values = sort([logspace(log10(0.1),log10(40),40)]);
+    rsp_values = sort([-logspace(log10(0.1),log10(40),20) logspace(log10(0.1),log10(40),20)]);
     rp_values = logspace(log10(0.1),log10(150),20);
     alpha_values = 0:0.05:1;
     thetap_values = 0:5:359;
