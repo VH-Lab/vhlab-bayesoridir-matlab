@@ -16,13 +16,14 @@ function [output_struct,Lik] = grid_proportional_noise_cpu(grid_size,data,noise_
 %      Rsp - the values of Rsp 
 %      Rp - the values of Rp to examine
 %      Alpha - the values of Rn (equal to Rp * Alpha)
+%      Op - the values of Op
 %      Sig - the values of sigma'\
 %      
 %   DATA : a structure with fields:
 %      angles - the angles that were used for stimulation
 %      responses - the mean responses to each stimulus
 %      num_trials - the number of trials of each stimulus
-%   NOISE_MLD  : Model of gaussian standard deviation: sigma = (10^(noise_mld(1)) + response^(noise_mld(2)))/sqrt(num_trials)
+%   NOISE_MDL  : Model of gaussian standard deviation: sigma = (10^(noise_mld(1)) + response^(noise_mld(2)))/sqrt(num_trials)
 %   
 % OUTPUTS:
 %   - OUTPUT_STRUCT: a structure with fields:
@@ -127,25 +128,25 @@ lik_rsp = lik_rsp./sum(lik_rsp,"all");
 ang = (0:359)';
 vrsp = grid_size.Rsp(rsp) + grid_size.Rp(rp) .* exp(-0.5*angdiff(ang-grid_size.Op(op)).^2./grid_size.Sig(sig).^2) + grid_size.Alpha(alpha) .* grid_size.Rp(rp) .* exp(-0.5*angdiff(ang-grid_size.Op(op)+180).^2./grid_size.Sig(sig).^2);
 %descriptors values in maximum likelihood condition
-DI = di(rp,alpha,sig,rsp);
-OI = oi(rp,alpha,sig,rsp);
+DI = di(rp,op,alpha,sig,rsp);
+OI = oi(rp,op,alpha,sig,rsp);
 DCV = dir_cv_value(rp,op,alpha,sig,rsp);
 CV = ori_cv_value(rp,op,alpha,sig,rsp);
 
 
-
+%circular variance histogram
 di_bins = 0:0.05:1.0;
 oi_bins = 0:0.05:1.0;
 dir_cv_bins = 0:0.05:1.0;
 cv_bins = 0:0.05:1.0;
 
 
-
 di_lik = 0 * di_bins;
 oi_lik = 0 * oi_bins;
+dcv_lik = 0 * dir_cv_bins;
+cv_lik = 0 * cv_bins;
 
 
-%circular variance histogram
 [di_index] = discretize(di(:),di_bins);
 for bin = 1:max(di_index)
     F = di_index==bin;
@@ -161,11 +162,6 @@ end
 oi_lik = oi_lik./sum(oi_lik);
 
 
-dcv_lik = 0 * dir_cv_bins;
-cv_lik = 0 * cv_bins;
-
-
-%circular variance histogram
 [dcv_index] = discretize(dir_cv_value(:),dir_cv_bins);
 for bin = 1:max(dcv_index)
     F = dcv_index==bin;
@@ -181,10 +177,12 @@ end
 cv_lik = cv_lik./sum(cv_lik);
 
 
-
 output_struct = struct( ...
 	'noise_model',struct('type',{'proportional'},'offset',offset,'slope',slope), ...
-	'other_parameters',struct('independent_variable',{'angle'},'independent_variable_value',data.angles), ...
+	'other_parameters',struct( ...
+        'independent_variable',{'angle'}, ...
+        'independent_variable_value',data.angles, ...
+        'mean_responses',data.mean_responses), ...
 	'marginal_likelihoods',struct( ...
 		'theta_pref',struct('values',grid_size.Op,'likelihoods',lik_theta_pref), ...
 		'Rp',struct('values',grid_size.Rp,'likelihoods',lik_Rp), ...
@@ -192,7 +190,7 @@ output_struct = struct( ...
 		'sigma',struct('values',grid_size.Sig,'likelihoods',lik_sigma), ...
 		'Rsp',struct('values',grid_size.Rsp,'likelihoods',lik_rsp)), ... 
 	'maximum_likelihood_parameters',struct( ...
-		'parameters',struct('theta_pref',grid_size.Op(op),'Rp',grid_size.Rp(rp),'Rn',grid_size.Alpha(alpha),'sigma',grid_size.Sig(sig),'Rsp',grid_size.Rsp(rsp),'tunning_curve',vrsp), ...
+		'parameters',struct('theta_pref',grid_size.Op(op),'Rp',grid_size.Rp(rp),'Rn',grid_size.Alpha(alpha) .* grid_size.Rp(rp),'sigma',grid_size.Sig(sig),'Rsp',grid_size.Rsp(rsp),'tunning_curve',vrsp), ...
 		'descriptors',struct('di',DI,'oi',OI,'cv',CV,'dir_cv',DCV)), ...
 	'descriptors',struct( ...
 		'di',struct('values',di_bins,'likelihoods',di_lik), ...

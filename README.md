@@ -28,7 +28,7 @@ P = [ 0.5 10 5 45 30 ]; % [Rsp Rp Rn theta_pref sigma]
 resps = vis.oridir.doublegaussianfunc(angles,P); % raw data
 
   %the parameter values to explore
-rsp_values = sort([-logspace(log10(0.1),log10(40),20) logspace(log10(0.1),log10(40),20)]);
+rsp_values = sort([logspace(log10(0.1),log10(40),40)]);
 rp_values = logspace(log10(0.1),log10(150),20);
 alpha_values = 0:0.05:1;
 thetap_values = 0:5:359;
@@ -66,7 +66,7 @@ P = [ 0.5 10 5 45 30 ]; % [Rsp Rp Rn theta_pref sigma]
 resps = vis.oridir.doublegaussianfunc(angles,P); % raw data
 
   %the parameter values to explore
-rsp_values = sort([-logspace(log10(0.1),log10(40),20) logspace(log10(0.1),log10(40),20)]);
+rsp_values = sort([logspace(log10(0.1),log10(40),40)]);
 rp_values = logspace(log10(0.1),log10(150),100);
 alpha_values = 0:0.05:1;
 thetap_values = 0:2:359;
@@ -87,9 +87,9 @@ resp_struct = struct('angles',angles(:),...
     'mean_responses',resps(:),...
     'num_trials',5*ones(size(resps(:))));
 
-[output_struct,lik] = vis.bayes.double_guassian.grid_proportional_noise(param_grid, resp_struct, noise_model,'verbose',1);
+[output_struct,lik] = vis.bayes.double_gaussian.grid_proportional_noise(param_grid, resp_struct, noise_model,'verbose',1);
 
-vis.bayes.double_guassian.plot_results(output_struct);
+vis.bayes.double_gaussian.plot_results(output_struct);
 ```
 
 ## Material related to the paper

@@ -1,4 +1,4 @@
-function [output_struct,Lik] = bayes_grid_function_proportional_noise(grid_size,data,noise_mdl,varargin)
+function [output_struct,Lik] = grid_proportional_noise_gpu(grid_size,data,noise_mdl,varargin)
 %   DESCRIPTION:
 %
 %   Inputs: GRID_SIZE - 
@@ -9,6 +9,8 @@ function [output_struct,Lik] = bayes_grid_function_proportional_noise(grid_size,
 %           LIK - 
 %
 % extract coefficients from noise linear regression model
+
+
 if numel(noise_mdl) == 2
     offset = noise_mdl(1);
     slope = noise_mdl(2);
@@ -20,45 +22,68 @@ elseif numel(noise_mdl) == 3
 end
 % build bayes grid matrix
 Lik = gpuArray(zeros(length(grid_size.Rp),length(grid_size.Op),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp)));
-di = gpuArray(zeros(length(grid_size.Rp),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp)));
-oi = gpuArray(zeros(length(grid_size.Rp),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp)));
-% ori_cv_value = gpuArray(zeros(length(grid_size.Rp),length(grid_size.Op),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp)));
-% dir_cv_value = gpuArray(zeros(length(grid_size.Rp),length(grid_size.Op),length(grid_size.Alpha),length(grid_size.Sig),length(grid_size.Rsp)));
-% get 5 parameters' posterior probability(liklihood)
+ori_cv_value = Lik;
+dir_cv_value = Lik;
 [rp_expanded,op_expanded,alpha_expanded,sig_expanded] = ndgrid(gpuArray(grid_size.Rp),gpuArray(grid_size.Op),gpuArray(grid_size.Alpha),gpuArray(grid_size.Sig));
 data_angle_expanded = gpuArray(reshape(data.angles, 1, 1, 1, 1, []));
 data_mean_expanded = gpuArray(reshape(data.mean_responses', 1, 1, 1, 1, []));
-num_trials = gpuArray(reshape(data.num_trials', 1, 1, 1, 1, [])); %gpuArray(data.num_trials .* ones([size(rp_expanded) numel(data_angle_expanded)]));
+num_trials = gpuArray(reshape(data.num_trials', 1, 1, 1, 1, []));
 num_trials_expanded = repmat([num_trials],[size(rp_expanded) 1]);
 
 for rsp = 1:length(grid_size.Rsp)
     fprintf('This loop round left: %d \n',length(grid_size.Rsp)+1-rsp);
-    fitting_rsp_v = grid_size.Rsp(rsp) + rp_expanded .* exp(-0.5 * angdiff(data_angle_expanded - op_expanded) .^ 2 ./ sig_expanded .^ 2) + alpha_expanded .* rp_expanded .* exp(-0.5 * angdiff(data_angle_expanded - (op_expanded + 180)) .^ 2 ./ sig_expanded .^ 2);
-    noise_sigma = vis.bayes.noise.proportional(noise_mdl,abs(fitting_rsp_v),num_trials_expanded);
-    prsp = normpdf(data_mean_expanded,fitting_rsp_v,noise_sigma);
+    vrsp = grid_size.Rsp(rsp) + rp_expanded .* exp(-0.5 * angdiff(data_angle_expanded - op_expanded) .^ 2 ./ sig_expanded .^ 2) + alpha_expanded .* rp_expanded .* exp(-0.5 * angdiff(data_angle_expanded - (op_expanded + 180)) .^ 2 ./ sig_expanded .^ 2);
+    noise_sigma = vis.bayes.noise.proportional(noise_mdl,abs(vrsp),num_trials_expanded);
+    prsp = normpdf(data_mean_expanded,vrsp,noise_sigma);
     multiprsp = squeeze(prod(prsp,5));
     Lik(:,:,:,:,rsp) = multiprsp;
-    clear fitting_rsp_v noise_sigma prsp multiprsp;
+    
     %circular variance and direction circular variance
-    % dir_angle = (0:5:359)';
-    % dir_angle_expanded = gpuArray(reshape(dir_angle, 1, 1, 1, 1, 1, []));
-    % ori_angle = [0:5:179,0:5:179]';
-    % ori_angle_expanded = gpuArray(reshape(ori_angle, 1, 1, 1, 1, 1, []));
-    % dir_vrsp = grid_size.Rsp(rsp) + rp_expanded .* exp(-0.5 * angdiff(dir_angle_expanded - op_expanded) .^ 2 ./ sig_expanded .^ 2) + alpha_expanded .* rp_expanded .* exp(-0.5 * angdiff(dir_angle_expanded - (op_expanded + 180)) .^ 2 ./ sig_expanded .^ 2);
-    % dir_angle_expanded = dir_angle_expanded .* (pi/180);
-    % dir_vector = abs(sum(dir_vrsp .* exp(1i .* dir_angle_expanded)) ./ sum(dir_vrsp(:)));
-    % ori_vector = abs(sum(dir_vrsp .* exp(1i .* ori_angle_expanded)) ./ sum(dir_vrsp(:)));
-    % dir_cv = 1-dir_vector;
-    % ori_cv = 1-ori_vector;
-    % dir_cv_value(:,:,:,:,rsp) = dir_cv;
-    % ori_cv_value(:,:,:,:,rsp) = ori_cv;
+
+    dir_angle_expanded = data_angle_expanded .* (pi/180);
+    ori_angle_expanded = mod(data_angle_expanded,180)*2*pi/180;
+
+    dir_vector = abs(sum(vrsp .* exp(1i .* dir_angle_expanded),5) ./ sum(vrsp,5));
+    ori_vector = abs(sum(vrsp .* exp(1i .* ori_angle_expanded),5) ./ sum(vrsp,5));
+    dir_cv = 1-dir_vector;
+    ori_cv = 1-ori_vector;
+    dir_cv_value(:,:,:,:,rsp) = dir_cv;
+    ori_cv_value(:,:,:,:,rsp) = ori_cv;
+
+    clear vrsp noise_sigma prsp multiprsp;
+
 end
 
 [rp_expanded,alpha_expanded,sig_expanded,rsp_expanded] = ndgrid(gpuArray(grid_size.Rp),gpuArray(grid_size.Alpha),gpuArray(grid_size.Sig),gpuArray(grid_size.Rsp));
-%direction index
-di = squeeze((1 - alpha_expanded) .* (1 - exp(-0.5 * 180 ^ 2 ./ sig_expanded .^ 2)) ./ (rsp_expanded ./ rp_expanded + 1 + alpha_expanded .* exp(-0.5 * 180 ^ 2 ./ sig_expanded .^ 2)));
+
+E = exp(-0.5*180^2./sig_expanded.^2);
+E2 = exp(-0.5*90^2./sig_expanded.^2);
+R_theta_pref = rsp_expanded+rp_expanded.*(1+alpha_expanded.*E);
+R_theta_pref180 = rsp_expanded+rp_expanded.*(E+alpha_expanded);
+R_theta_pref90 = rsp_expanded+rp_expanded.*(E2+alpha_expanded.*E2);
+
+% direction index
+% di_numeriator = Resp(theta_pref) - Resp(theta_pref+180)
+di_numerator = R_theta_pref - R_theta_pref180;
+% di_denominator = Resp(theta_pref)
+%       = Rsp + Rp + Alpha*Rp*E
+di_denominator = R_theta_pref;
+di = min(di_numerator./di_denominator,1);
+
 %orientation index
-oi = squeeze(1 - (2 .* rsp_expanded + 2 .* rp_expanded .* (1 + alpha_expanded) .* exp(-0.5 * 90 ^ 2 ./ sig_expanded .^ 2)) ./ (2 * rsp_expanded + rp_expanded .* (1 + alpha_expanded) .* (1 + exp(-0.5 * 180 ^ 2 ./ sig_expanded .^ 2))));
+% oi_numerator = Resp(theta_pref)+Resp(theta_pref_180)-(Resp(theta_pref-90)+Resp(theta_pref-90))
+oi_numerator = R_theta_pref+R_theta_pref180 - 2*R_theta_pref90;
+% oi_denominator = Resp(theta_pref)+Resp(theta_pref_180)
+oi_denominator = R_theta_pref+R_theta_pref180;
+oi = min(oi_numerator./oi_denominator,1);
+
+% %direction index
+% di = squeeze((1 - alpha_expanded) .* (1 - E) ./ (rsp_expanded ./ rp_expanded + (1 + alpha_expanded) .* (1 + E)));
+% di = min(di,1);
+% 
+% %orientation index
+% oi = squeeze((rp_expanded.*(1+alpha_expanded).*(1+E) - 2*(rp_expanded.*(1+alpha_expanded).*E2)) ./ (4*rsp_expanded+rp_expanded.*(1 + alpha_expanded) .* (1 + E) + 2*rp_expanded.*(1+alpha_expanded).*E2));
+% oi = min(oi,1);
 
 %extract and normalize the liklihood curve of each parameter
 lik_Rp = squeeze(sum(sum(sum(sum(Lik,5),4),3),2));
@@ -82,49 +107,57 @@ assert(abs(sum(lik_rsp) - 1) < 1e-6, 'lik_rsp does not sum to 1');
 %ind = squeeze(ind);
 [rp,op,alpha,sig,rsp] = ind2sub(size(Lik),ind);
 ang = (0:359)';
-fitting_rsp_v = grid_size.Rsp(rsp) + grid_size.Rp(rp) .* exp(-0.5*angdiff(ang-grid_size.Op(op)).^2./grid_size.Sig(sig).^2) + grid_size.Alpha(alpha) .* grid_size.Rp(rp) .* exp(-0.5*angdiff(ang-grid_size.Op(op)+180).^2./grid_size.Sig(sig).^2);
+vrsp = grid_size.Rsp(rsp) + grid_size.Rp(rp) .* exp(-0.5*angdiff(ang-grid_size.Op(op)).^2./grid_size.Sig(sig).^2) + grid_size.Alpha(alpha) .* grid_size.Rp(rp) .* exp(-0.5*angdiff(ang-grid_size.Op(op)+180).^2./grid_size.Sig(sig).^2);
 
 %descriptors values in maximum likelihood condition
 DI = di(rp,alpha,sig,rsp);
 OI = oi(rp,alpha,sig,rsp);
+DCV = dir_cv_value(rp,op,alpha,sig,rsp);
+CV = ori_cv_value(rp,op,alpha,sig,rsp);
 
-% DCV = dir_cv_value(rp,op,alpha,sig,rsp);
-% CV = ori_cv_value(rp,op,alpha,sig,rsp);
-di_lik = squeeze(sum(Lik,2));
-oi_lik = squeeze(sum(Lik,2));
 
 %circular variance histogram
-[di_index] = discretize(di(:),0:0.05:1);
+Lik_index = sum(Lik,2);
+di_bins = 0:0.05:1.0;
+oi_bins = 0:0.05:1.0;
+dir_cv_bins = 0:0.05:1.0;
+cv_bins = 0:0.05:1.0;
+
+
+di_lik = 0 * di_bins;
+oi_lik = 0 * oi_bins;
+dcv_lik = 0 * dir_cv_bins;
+cv_lik = 0 * cv_bins;
+
+
+[di_index] = discretize(di(:),di_bins);
 for bin = 1:max(di_index)
     F = di_index==bin;
-    di_count(bin) = sum(F);
-    di_lik_count(bin) = sum(di_lik(F));
+    di_lik(bin) = sum(Lik_index(F));
 end
-di_lik_count = di_lik_count./sum(di_lik_count);
+di_lik = di_lik./sum(di_lik);
 
-[oi_index] = discretize(oi(:),0:0.05:1);
+[oi_index] = discretize(oi(:),oi_bins);
 for bin = 1:max(oi_index)
     F = oi_index==bin;
-    oi_count(bin) = sum(F);
-    oi_lik_count(bin) = sum(oi_lik(F));
+    oi_lik(bin) = sum(Lik_index(F));
 end
-oi_lik_count = oi_lik_count./sum(oi_lik_count);
+oi_lik = oi_lik./sum(oi_lik);
 
-% [dcv_index] = discretize(dir_cv_value(:),0:0.05:1);
-% for bin = 1:max(dcv_index)
-%     F = dcv_index==bin;
-%     dcv_count(bin) = sum(F);
-%     dcv_lik(bin) = sum(Lik(F));
-% end
-% dcv_lik = dcv_lik./sum(dcv_lik);
-% 
-% [cv_index] = discretize(ori_cv_value(:),0:0.05:1);
-% for bin = 1:max(cv_index)
-%     F = cv_index==bin;
-%     cv_count(bin) = sum(F);
-%     cv_lik(bin) = sum(Lik(F));
-% end
-% cv_lik = cv_lik./sum(cv_lik);
+
+[dcv_index] = discretize(dir_cv_value(:),dir_cv_bins);
+for bin = 1:max(dcv_index)
+    F = dcv_index==bin;
+    dcv_lik(bin) = sum(Lik(F));
+end
+dcv_lik = dcv_lik./sum(dcv_lik);
+
+[ori_index] = discretize(ori_cv_value(:),cv_bins);
+for bin = 1:max(ori_index)
+    F = ori_index==bin;
+    cv_lik(bin) = sum(Lik(F));
+end
+cv_lik = cv_lik./sum(cv_lik);
 
 % release gpu storage
 lik_theta_pref = gather(lik_theta_pref);
@@ -135,10 +168,13 @@ lik_Alpha = gather(lik_Alpha);
 Lik = gather(Lik);
 DI = gather(DI);
 OI = gather(OI);
-di_count = gather(di_count);
-di_lik_count = gather(di_lik_count);
-oi_count = gather(oi_count);
-oi_lik_count = gather(oi_lik_count);
+di_bins = gather(di_bins);
+di_lik = gather(di_lik);
+oi_bins = gather(oi_bins);
+oi_lik = gather(oi_lik);
+dcv_lik = gather(dcv_lik);
+cv_lik = gather(cv_lik);
+
 
 output_struct = struct( ...
     'noise_model',struct('type',{'proportional'},'offset',offset,'slope',slope,'k',k), ...
@@ -151,9 +187,11 @@ output_struct = struct( ...
         'sigma',struct('values',grid_size.Sig,'likelihoods',lik_sigma), ...
         'Rsp',struct('values',grid_size.Rsp,'likelihoods',lik_rsp)), ... 
     'maximum_likelihood_parameters',struct( ...
-        'parameters',struct('theta_pref',grid_size.Op(op),'Rp',grid_size.Rp(rp),'Rn',grid_size.Alpha(alpha)*grid_size.Rp(rp),'sigma',grid_size.Sig(sig),'Rsp',grid_size.Rsp(rsp),'tunning_curve',fitting_rsp_v), ...
-        'descriptors',struct('di',DI,'oi',OI)), ...
-    'descriptors',struct( ...
-        'di',struct('histogram_count',di_count,'histogram_likelihoods',di_lik_count), ...
-        'oi',struct('histogram_count',oi_count,'histogram_likelihoods',oi_lik_count)));
+        'parameters',struct('theta_pref',grid_size.Op(op),'Rp',grid_size.Rp(rp),'Rn',grid_size.Alpha(alpha)*grid_size.Rp(rp),'sigma',grid_size.Sig(sig),'Rsp',grid_size.Rsp(rsp),'tunning_curve',vrsp), ...
+		'descriptors',struct('di',DI,'oi',OI,'cv',CV,'dir_cv',DCV)), ...
+	'descriptors',struct( ...
+		'di',struct('values',di_bins,'likelihoods',di_lik), ...
+		'oi',struct('values',oi_bins,'likelihoods',oi_lik), ...
+		'cv',struct('values',cv_bins,'likelihoods',cv_lik), ...
+		'dir_cv',struct('values',dir_cv_bins,'likelihoods',dcv_lik)));
 end
