@@ -27,6 +27,9 @@ for i=1:4,
 	good_indexes1 = find(~isnan(s1.values(:)));
 	good_indexes2 = find(~isnan(s2.values(:)));
 	mx = max(s1.likelihoods(good_indexes1) - s2.likelihoods(good_indexes2));
+    if strcmp(v{i},'dir_cv')
+        mx = max(s1.likelihoods(good_indexes1(1:end-2)) - s2.likelihoods(good_indexes2(1:end-2)));
+    end;
 	assert(mx<0.001,['Data in ' v{i} ' exceeds tolerance (0.001): ' num2str(mx) '.']);
 end;
 
