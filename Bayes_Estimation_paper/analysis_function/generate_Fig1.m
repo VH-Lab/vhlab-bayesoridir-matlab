@@ -12,7 +12,7 @@ clear,clc,close all;
 % generate ideal simulated tuning curves
 parameter_w = data.generate_fixed_parameters(10,5,90,30,1);% well tuned
 parameter_p = data.generate_fixed_parameters(1,0,90,30,1);% poorly tuned
-ang = 0:10:359;
+ang = 0:30:359;
 ideal_w = data.generate_simulate_data(ang,parameter_w);
 ideal_p = data.generate_simulate_data(ang,parameter_p);
 
@@ -34,7 +34,7 @@ noise_mdl = vis.bayes.noise.fit_proportional_noise_plus_c(m,v,1);
 % Bayes Estimate Grid Range and Size
 I = struct('Rp',linspace(0.1,20,60), ...
     'Op',0:5:359, ...
-    'Alpha',linspace(0,1,15), ...
+    'Alpha',linspace(0,1,30), ...
     'Sig',linspace(1,60,60), ...
     'Rsp',linspace(0.1,10,60));
 %Bayes Estimation

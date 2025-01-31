@@ -1,5 +1,5 @@
 clear;close all;clc;
-load my_fig1_kcs_numtrials.mat
+load my_fig1.mat
 % Fig 1 - A comparison of least-squares fitting to Bayesian parameter
 % estimation
 
@@ -128,26 +128,26 @@ title('J','FontSize',12);%Poorly Tuned DI
 
 %%
 % export figures
-F1a = figure(1);
-F1b = figure(2);
-F1c = figure(3);
-F1d = figure(4);
-F1e = figure(5);
-F1f = figure(6);
-F1g = figure(7);
-F1h = figure(8);
-F1i = figure(9);
-F1j = figure(10);
-
-path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
-
-exportgraphics(F1a,[path 'Figure_1a_kcs_numtrials.pdf'],"ContentType","vector")
-exportgraphics(F1b,[path 'Figure_1b_kcs_numtrials.pdf'],"ContentType","vector")
-exportgraphics(F1c,[path 'Figure_1c_kcs_numtrials.pdf'],"ContentType","vector")
-exportgraphics(F1d,[path 'Figure_1d_kcs_numtrials.pdf'],"ContentType","vector")
-exportgraphics(F1e,[path 'Figure_1e_kcs_numtrials.pdf'],"ContentType","vector")
-exportgraphics(F1f,[path 'Figure_1f_kcs_numtrials.pdf'],"ContentType","vector")
-exportgraphics(F1g,[path 'Figure_1g_kcs_numtrials.pdf'],"ContentType","vector")
-exportgraphics(F1h,[path 'Figure_1h_kcs_numtrials.pdf'],"ContentType","vector")
-exportgraphics(F1i,[path 'Figure_1i_kcs_numtrials.pdf'],"ContentType","vector")
-exportgraphics(F1j,[path 'Figure_1j_kcs_numtrials.pdf'],"ContentType","vector")
+% F1a = figure(1);
+% F1b = figure(2);
+% F1c = figure(3);
+% F1d = figure(4);
+% F1e = figure(5);
+% F1f = figure(6);
+% F1g = figure(7);
+% F1h = figure(8);
+% F1i = figure(9);
+% F1j = figure(10);
+% 
+% path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
+% 
+% exportgraphics(F1a,[path 'Figure_1a_kcs_numtrials.pdf'],"ContentType","vector")
+% exportgraphics(F1b,[path 'Figure_1b_kcs_numtrials.pdf'],"ContentType","vector")
+% exportgraphics(F1c,[path 'Figure_1c_kcs_numtrials.pdf'],"ContentType","vector")
+% exportgraphics(F1d,[path 'Figure_1d_kcs_numtrials.pdf'],"ContentType","vector")
+% exportgraphics(F1e,[path 'Figure_1e_kcs_numtrials.pdf'],"ContentType","vector")
+% exportgraphics(F1f,[path 'Figure_1f_kcs_numtrials.pdf'],"ContentType","vector")
+% exportgraphics(F1g,[path 'Figure_1g_kcs_numtrials.pdf'],"ContentType","vector")
+% exportgraphics(F1h,[path 'Figure_1h_kcs_numtrials.pdf'],"ContentType","vector")
+% exportgraphics(F1i,[path 'Figure_1i_kcs_numtrials.pdf'],"ContentType","vector")
+% exportgraphics(F1j,[path 'Figure_1j_kcs_numtrials.pdf'],"ContentType","vector")

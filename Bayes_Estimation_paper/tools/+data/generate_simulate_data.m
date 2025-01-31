@@ -14,6 +14,6 @@ data_raw.responses = zeros(length(angle),1);
 
 data_raw.responses = parameters.response + parameters.rpref .*exp(-0.5.*angdiff(angle-parameters.theta_pref).^2/parameters.sigma.^2) + parameters.alpha .* parameters.rpref .* exp(-0.5.*angdiff(angle-parameters.theta_pref+180).^2/parameters.sigma .^2);
 
-if size(data_raw,1) < size(data_raw,2)
-    data_raw = data_raw'; 
+if size(data_raw.responses,1) < size(data_raw.responses,2)
+    data_raw.responses = data_raw.responses(:); 
 end

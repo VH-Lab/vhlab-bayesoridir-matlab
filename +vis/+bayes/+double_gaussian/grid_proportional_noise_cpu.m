@@ -91,8 +91,8 @@ for rp = 1:length(grid_size.Rp)
 
                     %orientation index
                     % oi_numerator = Resp(theta_pref)+Resp(theta_pref_180)-(Resp(theta_pref-90)+Resp(theta_pref-90))
-                    oi_numerator = R_theta_pref+R_theta_pref180 - 2*R_theta_pref90;
-                    oi_denominator = R_theta_pref+R_theta_pref180 + 2*R_theta_pref90;
+                    oi_numerator = R_theta_pref + R_theta_pref180 - 2*R_theta_pref90;
+                    oi_denominator = R_theta_pref + R_theta_pref180 + 2*R_theta_pref90;
                     oi(rp,op,alpha,sig,rsp) = min(oi_numerator/oi_denominator,1);
                     
                     %circular variance and direction circular variance

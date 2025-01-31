@@ -31,7 +31,7 @@ num_trials = gpuArray(reshape(data.num_trials', 1, 1, 1, 1, []));
 num_trials_expanded = repmat([num_trials],[size(rp_expanded) 1]);
 
 for rsp = 1:length(grid_size.Rsp)
-    fprintf('This loop round left: %d \n',length(grid_size.Rsp)+1-rsp);
+    disp(['Loop ' int2str(rsp) ' of ' int2str(length(grid_size.Rsp)) '...']);
     vrsp = grid_size.Rsp(rsp) + rp_expanded .* exp(-0.5 * angdiff(data_angle_expanded - op_expanded) .^ 2 ./ sig_expanded .^ 2) + alpha_expanded .* rp_expanded .* exp(-0.5 * angdiff(data_angle_expanded - (op_expanded + 180)) .^ 2 ./ sig_expanded .^ 2);
     noise_sigma = vis.bayes.noise.proportional(noise_mdl,abs(vrsp),num_trials_expanded);
     prsp = normpdf(data_mean_expanded,vrsp,noise_sigma);
@@ -67,14 +67,14 @@ R_theta_pref90 = rsp_expanded+rp_expanded.*(E2+alpha_expanded.*E2);
 di_numerator = R_theta_pref - R_theta_pref180;
 % di_denominator = Resp(theta_pref)
 %       = Rsp + Rp + Alpha*Rp*E
-di_denominator = R_theta_pref;
+di_denominator = R_theta_pref + R_theta_pref180;
 di = min(di_numerator./di_denominator,1);
 
 %orientation index
 % oi_numerator = Resp(theta_pref)+Resp(theta_pref_180)-(Resp(theta_pref-90)+Resp(theta_pref-90))
-oi_numerator = R_theta_pref+R_theta_pref180 - 2*R_theta_pref90;
+oi_numerator = R_theta_pref + R_theta_pref180 - 2*R_theta_pref90;
 % oi_denominator = Resp(theta_pref)+Resp(theta_pref_180)
-oi_denominator = R_theta_pref+R_theta_pref180;
+oi_denominator = R_theta_pref + R_theta_pref180 + 2*R_theta_pref90;
 oi = min(oi_numerator./oi_denominator,1);
 
 % %direction index
@@ -191,7 +191,7 @@ output_struct = struct( ...
 		'descriptors',struct('di',DI,'oi',OI,'cv',CV,'dir_cv',DCV)), ...
 	'descriptors',struct( ...
 		'di',struct('values',di_bins,'likelihoods',di_lik), ...
-		'oi',struct('values',oi_bins,'likelihoods',oi_lik), ...
+		'oi',struct('values',oi_bins,'likelihoods',oi_lik), ... 
 		'cv',struct('values',cv_bins,'likelihoods',cv_lik), ...
 		'dir_cv',struct('values',dir_cv_bins,'likelihoods',dcv_lik)));
 end
