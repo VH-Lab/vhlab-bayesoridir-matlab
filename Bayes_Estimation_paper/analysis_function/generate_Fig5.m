@@ -1,6 +1,6 @@
 clear;clc;clf;
 % generate figure 5
-load my_fig5_1_new_kcs.mat
+load my_fig5_1_kcs_numtrials.mat
 %%
 I = struct('Rp',linspace(0.1,20,60), ...
     'Op',0:5:359, ...

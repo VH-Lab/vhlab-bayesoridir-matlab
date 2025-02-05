@@ -1,5 +1,5 @@
 clear,clc,close;
-load my_fig4_new_kcs.mat
+% load my_fig4_new_kcs.mat
 % test6 -  prediction of different DI value
 %simulated 'true' curves
 % simulate sampling

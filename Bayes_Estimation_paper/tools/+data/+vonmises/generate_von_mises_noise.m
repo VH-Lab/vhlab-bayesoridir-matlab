@@ -12,7 +12,7 @@ if size(raw_curve.responses,1) < size(raw_curve.responses,2)
 end
 
 noisy_responses = zeros(length(raw_curve.responses),experiment_num,measurement_num);
-noise = normrnd(2,1,size(noisy_responses));
+noise = normrnd(0,1,size(noisy_responses));
 noisy_responses = raw_curve.responses + noise;
 noisy_responses(noisy_responses<0) = 0; % Limitation: Response frequency must larger or equal to 0
 noisy_curve.mean_responses = mean(noisy_responses,3);

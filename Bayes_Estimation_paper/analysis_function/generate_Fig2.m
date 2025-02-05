@@ -48,7 +48,7 @@ noisy_l.num_trials = 5;
 noisy_m.num_trials = 5;
 noisy_h.num_trials = 5;
 tic,
-[bayes_l,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_l,noise_mdl);
+[bayes_l,Lik_l] = bayes_grid_function_proportional_noise_gpu(I,noisy_l,noise_mdl);
 [bayes_m,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_m,noise_mdl);
 [bayes_h,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_h,noise_mdl);
 toc,
