@@ -3,7 +3,7 @@ function von_mises_slider_demo
     % 1. initialize parameters
     % ==============
     % range of theta
-    theta = linspace(-pi, pi, 400);
+    theta = linspace(-180, 180, 361);
 
     % initialize parameters
     A_init    = 1;    % amplitude
@@ -22,7 +22,7 @@ function von_mises_slider_demo
     % plot initial curve
     hPlot = plot(theta, y_init, 'LineWidth', 2);
     hold on; grid on;
-    xlim([-pi, pi]);
+    xlim([-180, 180]);
     ylim([0, 10]);
 
     % show current value of parameters
@@ -60,7 +60,7 @@ function von_mises_slider_demo
               'String','preferred angle', ...
               'BackgroundColor',[0.8 0.8 0.8]);
     sliderPhi = uicontrol('Style','slider', ...
-                          'Min', -pi, 'Max', pi, ...
+                          'Min', -180, 'Max', 180, ...
                           'Value', phi_init, ...
                           'Position',[430 40 100 20], ...
                           'Callback',@(src,~)updatePlot());
@@ -94,5 +94,5 @@ end
 %  M(θ) = A * exp{k [cos(2(θ - φ)) - 1]}
 % ========================================
 function y = von_mises_variant(theta, A, k, phi)
-    y = A * exp( k .* ( cos( 2*(theta - phi) ) - 1 ) );
+    y = A * exp( k .* ( cosd( 2*(theta - phi) ) - 1 ) );
 end
