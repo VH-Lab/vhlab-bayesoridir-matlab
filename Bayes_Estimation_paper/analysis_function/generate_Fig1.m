@@ -11,7 +11,7 @@ clear,clc,close all;
 
 % generate ideal simulated tuning curves
 parameter_w = data.generate_fixed_parameters(10,5,90,30,1);% well tuned
-parameter_p = data.generate_fixed_parameters(1,0,90,30,1);% poorly tuned
+parameter_p = data.generate_fixed_parameters(.1,0,90,30,1);% poorly tuned
 ang = 0:30:359;
 ideal_w = data.generate_simulate_data(ang,parameter_w);
 ideal_p = data.generate_simulate_data(ang,parameter_p);
