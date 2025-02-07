@@ -11,7 +11,7 @@ clear,clc,close all;
 
 % generate ideal simulated tuning curves
 parameter_w = data.generate_fixed_parameters(10,5,90,30,1);% well tuned
-parameter_p = data.generate_fixed_parameters(.1,0,90,30,1);% poorly tuned
+parameter_p = data.generate_fixed_parameters(0.1,0,90,30,1);% poorly tuned
 ang = 0:30:359;
 ideal_w = data.generate_simulate_data(ang,parameter_w);
 ideal_p = data.generate_simulate_data(ang,parameter_p);
@@ -34,13 +34,20 @@ noise_mdl = vis.bayes.noise.fit_proportional_noise_plus_c(m,v,1);
 % Bayes Estimate Grid Range and Size
 I = struct('Rp',linspace(0.1,20,60), ...
     'Op',0:5:359, ...
-    'Alpha',linspace(0,1,30), ...
+    'Alpha',linspace(0,1,21), ...
     'Sig',linspace(1,60,60), ...
     'Rsp',linspace(0.1,10,60));
 %Bayes Estimation
 noisy_w.num_trials = 5;
 noisy_p.num_trials = 5;
 tic,
-[bayes_w,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_w,noise_mdl);
+[bayes_w,Lik] = bayes_grid_function_proportional_noise_gpu(I,noisy_w,noise_mdl);
 [bayes_p,~] = bayes_grid_function_proportional_noise_gpu(I,noisy_p,noise_mdl);
 toc,
+
+rp_thetapref = squeeze(sum(Lik,[3 4 5]));
+rp_alpha = squeeze(sum(Lik,[2 4 5]));
+rp_sigma = squeeze(sum(Lik,[2 3 5]));
+thetapref_rsp = squeeze(sum(Lik,[1 3 4]));
+
+clear Lik;

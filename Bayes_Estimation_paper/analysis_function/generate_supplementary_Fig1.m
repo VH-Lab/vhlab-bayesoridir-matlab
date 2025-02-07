@@ -19,7 +19,7 @@ I = struct('Rp',linspace(5,15,41), ...
     'Op',170:0.5:190, ...
     'Alpha',linspace(0.3,0.9,31), ...
     'Sig',linspace(20,45,51), ...
-    'Rsp',linspace(0.1,2,41));
+    'Rsp',linspace(0.1,2,39));
 
 noisy.num_trials = 5;
 [bayes,Lik] = bayes_grid_function_proportional_noise_gpu(I,noisy,noise_mdl);
@@ -29,4 +29,4 @@ rp_sigma = squeeze(sum(Lik,[2 3 5]));
 thetapref_rsp = squeeze(sum(Lik,[1 3 4]));
 
 clear Lik;
-save my_supplementary_fig1_2.mat
+save my_supplementary_fig1_3.mat

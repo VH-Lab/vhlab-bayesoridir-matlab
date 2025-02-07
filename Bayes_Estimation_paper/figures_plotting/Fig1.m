@@ -139,7 +139,7 @@ title('J','FontSize',12);%Poorly Tuned DI
 % F1i = figure(9);
 % F1j = figure(10);
 % 
-% path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
+% path = 'D:\GitHub\vhlab-bayesoridir-matlab\Bayes_Estimation_paper\figures\noise_mdl\kcs\';
 % 
 % exportgraphics(F1a,[path 'Figure_1a_kcs_numtrials.pdf'],"ContentType","vector")
 % exportgraphics(F1b,[path 'Figure_1b_kcs_numtrials.pdf'],"ContentType","vector")
