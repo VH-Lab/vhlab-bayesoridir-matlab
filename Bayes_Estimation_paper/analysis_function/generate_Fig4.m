@@ -5,7 +5,7 @@ clear,clc,close;
 % simulate sampling
 cell_num = 5;
 measurement_num = 5;
-experiment_num = 10;
+experiment_num = 100;
 ang = 0:45:359;
 %curves parameters
 rp = 10;
@@ -19,7 +19,7 @@ I = struct('Rp',linspace(0.1,20,60), ...
     'Op',0:5:359, ...
     'Alpha',linspace(0,1,15), ...
     'Sig',linspace(1,60,60), ...
-    'Rsp',linspace(0.1,10,60));
+    'Rsp',linspace(-10,10,60));
 %%
 %   generate simulate data
 %   store in cell matrix. one cell one curve.
