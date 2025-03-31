@@ -30,18 +30,20 @@ for i = 1:cell_num
         pdf_alpha = output(idx).marginal_likelihood.Alpha.likelihoods;
         pdf_rsp = output(idx).marginal_likelihood.Rsp.likelihoods;
         pdf_angle = output(idx).marginal_likelihood.theta_pref.likelihoods;
+        pdf_orientation_angle = pdf_angle(1:numel(pdf_angle)/2) + pdf_angle((numel(pdf_angle)/2 + 1):end); % combine directional angles to orientational angles
         pdf_sigma = output(idx).marginal_likelihood.sigma.likelihoods;
 
-        grid_rp = output(j).marginal_likelihood.Rp.values;
-        grid_alpha = output(j).marginal_likelihood.Alpha.values;
-        grid_rsp = output(j).marginal_likelihood.Rsp.values;
-        grid_angle = output(j).marginal_likelihood.theta_pref.values;
-        grid_sigma = output(j).marginal_likelihood.sigma.values;
+        grid_rp = output(idx).marginal_likelihood.Rp.values;
+        grid_alpha = output(idx).marginal_likelihood.Alpha.values;
+        grid_rsp = output(idx).marginal_likelihood.Rsp.values;
+        grid_angle = output(idx).marginal_likelihood.theta_pref.values;
+        grid_orientation_angle = output(idx).marginal_likelihood.theta_pref.values(1:numel(pdf_orientation_angle));
+        grid_sigma = output(idx).marginal_likelihood.sigma.values;
 
         [rp_bound,count_rp] = analysis.in_boundaries(grid_rp,pdf_rp,rp,offset); % Define offsets = 0.25, 0.5 and 0.75 of the central intervals
         [alpha_bound,count_alpha] = analysis.in_boundaries(grid_alpha,pdf_alpha,alpha(i),offset);
         [rsp_bound,count_rsp] = analysis.in_boundaries(grid_rsp,pdf_rsp,rsp,offset);
-        [angle_bound,count_angle] = analysis.in_boundaries(grid_angle,pdf_angle,angle,offset);
+        [angle_bound,count_angle] = analysis.in_boundaries(grid_orientation_angle,pdf_orientation_angle,angle,offset);
         [sigma_bound,count_sigma] = analysis.in_boundaries(grid_sigma,pdf_sigma,sigma,offset);
 
         count_rp_total(:,i) = count_rp_total(:,i) + count_rp(:);
@@ -124,8 +126,8 @@ curvecolor = {'#0072BD','#77AC30','#EDB120','#7E2F8E','#D95319'};
 titlename = {'A','B','C','D','E'};
 for i = 1:5
 figure(i),hold on;
-plot(data_ideal{i}.angle,data_ideal{i}.responses,'Color',curvecolor{i},'LineWidth',1)
-errorbar(data_mean{i}(10).angle,data_mean{i}(10).mean_responses,data_mean{i}(10).responses_stderr,'*','Color','#A2142F','MarkerSize',7)
+plot(data_ideal{i}.angles,data_ideal{i}.responses,'Color',curvecolor{i},'LineWidth',1)
+errorbar(data_mean{i}(10).angles,data_mean{i}(10).mean_responses,data_mean{i}(10).responses_stderr,'*','Color','#A2142F','MarkerSize',7)
 plot(0:359,output(i*100-90).maximum_likelihood.parameters.tunning_curve,'k','LineWidth',1)
 xlim([-5,365]),
 ylim([-.5,20]),

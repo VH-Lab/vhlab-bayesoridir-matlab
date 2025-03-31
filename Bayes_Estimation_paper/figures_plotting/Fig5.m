@@ -1,15 +1,67 @@
 clear;close all;clc;
 % Fig 5 - Performance of Bayesian parameter estimation for simulated data
 % of varying orientation tuning.
+load my_fig5_mode.mat
 cell_type = 1;
-experiment_num = 10;
+experiment_num = 100;
 ang = 0:359;
 %curves parameters
 rp = 7.5;
 rn = 3.75;
+alpha = rn./rp;
 rsp = 2.5;
 angle = 45;
 sigma = 30;
+%%
+% mode and central of 25%, 50% and 75%
+offset = [0.25 0.5 0.75];
+count_rp_total = zeros(numel(offset),cell_num);
+count_alpha_total = count_rp_total;
+count_rsp_total = count_rp_total;
+count_angle_total = count_rp_total;
+count_sigma_total = count_rp_total;
+
+% Get all pdf in output data.
+for i = 1:cell_num
+    for j = 1:experiment_num
+        idx = (i-1)*experiment_num + j;
+        pdf_rp = output{idx}.marginal_likelihood.Rp.likelihoods;
+        pdf_alpha = output{idx}.marginal_likelihood.Alpha.likelihoods;
+        pdf_rsp = output{idx}.marginal_likelihood.Rsp.likelihoods;
+        pdf_angle = output{idx}.marginal_likelihood.theta_pref.likelihoods;
+        pdf_orientation_angle = pdf_angle(1:numel(pdf_angle)/2) + pdf_angle((numel(pdf_angle)/2 + 1):end); % combine directional angles to orientational angles
+        pdf_sigma = output{idx}.marginal_likelihood.sigma.likelihoods;
+        
+        grid_rp = output{idx}.marginal_likelihood.Rp.values;
+        grid_alpha = output{idx}.marginal_likelihood.Alpha.values;
+        grid_rsp = output{idx}.marginal_likelihood.Rsp.values;
+        grid_angle = output{idx}.marginal_likelihood.theta_pref.values;
+        grid_orientation_angle = output{idx}.marginal_likelihood.theta_pref.values(1:numel(pdf_orientation_angle));
+        grid_sigma = output{idx}.marginal_likelihood.sigma.values;
+
+        [rp_bound,count_rp] = analysis.in_boundaries(grid_rp,pdf_rp,rp,offset); % Define offsets = 0.25, 0.5 and 0.75 of the central intervals
+        [alpha_bound,count_alpha] = analysis.in_boundaries(grid_alpha,pdf_alpha,alpha,offset);
+        [rsp_bound,count_rsp] = analysis.in_boundaries(grid_rsp,pdf_rsp,rsp,offset);
+        [angle_bound,count_angle] = analysis.in_boundaries(grid_orientation_angle,pdf_orientation_angle,angle,offset);
+        [sigma_bound,count_sigma] = analysis.in_boundaries(grid_sigma,pdf_sigma,sigma,offset);
+
+        count_rp_total(:,i) = count_rp_total(:,i) + count_rp(:);
+        count_alpha_total(:,i) = count_alpha_total(:,i) + count_alpha(:);
+        count_rsp_total(:,i) = count_rsp_total(:,i) + count_rsp(:);
+        count_angle_total(:,i) = count_angle_total(:,i) + count_angle(:);
+        count_sigma_total(:,i) = count_sigma_total(:,i) + count_sigma(:);
+    end
+end
+    % Get fraction that 'true' value sit in the central intervals
+
+    fraction_rp = count_rp_total / experiment_num;
+    fraction_alpha = count_alpha_total / experiment_num;
+    fraction_rsp = count_rsp_total / experiment_num;
+    fraction_angle = count_angle_total / experiment_num;
+    fraction_sigma = count_sigma_total / experiment_num;
+
+%%
+% create plotting edges(n+1) and center(n) N = curves number
 edges = 0:0.05:1;
 center = edges(1:end-1) + (edges(1)+edges(2))/2;
 true_oi = 1 - (2.*rsp + 2.*(rp + rn).*exp(-0.5*90^2/30^2))./(2.*rsp + (rp + rn).*(1 + exp(-0.5*180^2/30^2)));

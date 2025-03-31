@@ -20,7 +20,7 @@ noisy_curve.responses_stddev = std(noisy_responses,[],3);
 noisy_curve.responses_stderr = std(noisy_responses,[],3)./repmat(sqrt(measurement_num),length(raw_curve.responses),experiment_num);
 
 for i = 1:experiment_num
-    noisy_data(i).angle = raw_curve.angle;
+    noisy_data(i).angles = raw_curve.angles;
     noisy_data(i).noisy_responses = noisy_responses;
     noisy_data(i).mean_responses = noisy_curve.mean_responses(:,i)';
     noisy_data(i).responses_stddev = noisy_curve.responses_stddev(:,i);

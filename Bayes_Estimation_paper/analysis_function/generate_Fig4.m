@@ -15,11 +15,11 @@ angle = 45;
 sigma = 30;
 %%
 % bayes grid input
-I = struct('Rp',linspace(0.1,20,60), ...
+I = struct('Rp',linspace(0.1,20,41), ...
     'Op',0:5:359, ...
-    'Alpha',linspace(0,1,15), ...
-    'Sig',linspace(1,60,60), ...
-    'Rsp',linspace(-10,10,60));
+    'Alpha',linspace(0,1,31), ...
+    'Sig',linspace(1,60,41), ...
+    'Rsp',linspace(-10,10,41));
 %%
 %   generate simulate data
 %   store in cell matrix. one cell one curve.
@@ -30,8 +30,8 @@ for i = 1:cell_num
     %plotting
     figure(),hold on,
     for j = 1:experiment_num
-        plot(data_ideal{i}.angle,data_ideal{i}.responses,'k','LineWidth',2)
-        plot(data_mean{i}(j).angle,data_mean{i}(j).mean_responses,'b*')
+        plot(data_ideal{i}.angles,data_ideal{i}.responses,'k','LineWidth',2)
+        plot(data_mean{i}(j).angles,data_mean{i}(j).mean_responses,'b*')
         ylim([0,15])
         xlabel('theta')
         ylabel('response magnitude')
@@ -48,7 +48,7 @@ for i = 1:cell_num
         m = [m,data_mean{i}(j).mean_responses];
     end
 end
-
+figure(),
 noise_mdl = vis.bayes.noise.fit_proportional_noise_plus_c(m,v,1);
 
 %%
