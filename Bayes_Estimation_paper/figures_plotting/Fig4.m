@@ -1,14 +1,14 @@
 clear;close;clc;
 load my_fig4_mode.mat
 % Fig 4 - Performance of Bayesian parameter estimation for simulated data
-% of varying orientation tuning(DI).
+% of varying direction tuning(DI).
 
-cell_num = 5;
+cell_type = 5;
 experiment_num = 100;
 ang = 0:45:359;
 %curves parameters
 rp = 10;
-rn = linspace(10,0,cell_num);
+rn = linspace(10,0,cell_type);
 alpha = rn./rp;
 rsp = 0;
 angle = 45;
@@ -16,14 +16,14 @@ sigma = 30;
 %%
 % mode and central of 25%, 50% and 75%
 offset = [0.25 0.5 0.75];
-count_rp_total = zeros(numel(offset),cell_num);
+count_rp_total = zeros(numel(offset),cell_type);
 count_alpha_total = count_rp_total;
 count_rsp_total = count_rp_total;
 count_angle_total = count_rp_total;
 count_sigma_total = count_rp_total;
 
 % Get all pdf in output data.
-for i = 1:cell_num
+for i = 1:cell_type
     for j = 1:experiment_num
         idx = (i-1)*experiment_num + j;
         pdf_rp = output(idx).marginal_likelihood.Rp.likelihoods;
@@ -31,6 +31,7 @@ for i = 1:cell_num
         pdf_rsp = output(idx).marginal_likelihood.Rsp.likelihoods;
         pdf_angle = output(idx).marginal_likelihood.theta_pref.likelihoods;
         pdf_orientation_angle = pdf_angle(1:numel(pdf_angle)/2) + pdf_angle((numel(pdf_angle)/2 + 1):end); % combine directional angles to orientational angles
+        pdf_orientation_angle(end+1) = pdf_orientation_angle(1);
         pdf_sigma = output(idx).marginal_likelihood.sigma.likelihoods;
 
         grid_rp = output(idx).marginal_likelihood.Rp.values;
@@ -146,7 +147,7 @@ center = edges(1:end-1) + (edges(1)+edges(2))/2;
 
 figure(6),hold on;
 for i = 1:5
-plot(center,output(i*10-3).descriptors.di.histogram_likelihoods,'Color',curvecolor{i},'LineWidth',1)
+plot(center,output(i*100-90).descriptors.di.histogram_likelihoods,'Color',curvecolor{i},'LineWidth',1)
 end
 ylim([-0.02,1]),
 xticks(0:.2:1),
@@ -159,7 +160,7 @@ title('F','FontSize',12);
 figure(7),
 hold on,
 for i = 1:5
-plot(output(i*10-3).marginal_likelihood.Rp.values,output(i*10-3).marginal_likelihood.Rp.likelihoods,'Color',curvecolor{i},'LineWidth',1),
+plot(output(i*100-90).marginal_likelihood.Rp.values,output(i*100-90).marginal_likelihood.Rp.likelihoods,'Color',curvecolor{i},'LineWidth',1),
 end
 ylim([-0.02,1]),
 xticks(0:5:20), 
@@ -172,7 +173,7 @@ title('G','FontSize',12);
 figure(8),
 hold on,
 for i = 1:5
-plot(output(i*10-3).marginal_likelihood.sigma.values,output(i*10-3).marginal_likelihood.sigma.likelihoods,'Color',curvecolor{i},'LineWidth',1),
+plot(output(i*100-90).marginal_likelihood.sigma.values,output(i*100-90).marginal_likelihood.sigma.likelihoods,'Color',curvecolor{i},'LineWidth',1),
 end
 ylim([-0.02,1]),
 yticks(0:.2:1),
@@ -184,7 +185,7 @@ title('H','FontSize',12);
 figure(9),
 hold on,
 for i = 1:5
-plot(output(i*10-3).marginal_likelihood.theta_pref.values,output(i*10-3).marginal_likelihood.theta_pref.likelihoods,'Color',curvecolor{i},'LineWidth',1),
+plot(output(i*100-90).marginal_likelihood.theta_pref.values,output(i*100-90).marginal_likelihood.theta_pref.likelihoods,'Color',curvecolor{i},'LineWidth',1),
 end
 xlim([-5,365]),
 ylim([-0.02,1]),
@@ -197,7 +198,7 @@ title('I','FontSize',12);
 figure(10),
 hold on,
 for i = 1:5
-plot(output(i*10-3).marginal_likelihood.Rsp.values,output(i*10-3).marginal_likelihood.Rsp.likelihoods,'Color',curvecolor{i},'LineWidth',1),
+plot(output(i*100-90).marginal_likelihood.Rsp.values,output(i*100-90).marginal_likelihood.Rsp.likelihoods,'Color',curvecolor{i},'LineWidth',1),
 end
 ylim([-0.02,1]),
 xticks(0:2:10),
@@ -206,28 +207,110 @@ set(gca,'FontSize',8),
 xlabel('C','FontSize',10),
 ylabel('Likelihood','FontSize',10),
 title('J','FontSize',12);
+
+interval_tag = ['25%';'50%';'75%'];
+
+figure(11),
+hold on,
+b = bar(offset,count_alpha_total,'grouped');
+for i = 1:5
+ b(i).FaceColor = curvecolor{i};
+end
+xticks(offset);
+xticklabels(interval_tag);
+ylim([0,100]);
+yticks(0:20:100);
+xlabel('Credential Intervals of \alpha');
+ylabel('Fraction of True Value in the Intervals (%)');
+title('K','FontSize',12);
+
+figure(12),
+hold on,
+b = bar(offset,count_rp_total,'grouped');
+for i = 1:5
+ b(i).FaceColor = curvecolor{i};
+end
+xticks(offset);
+xticklabels(interval_tag);
+ylim([0,100]);
+yticks(0:20:100);
+xlabel('Credential Intervals of R_{p}');
+ylabel('Fraction of True Value in the Intervals (%)');
+title('L','FontSize',12);
+
+figure(13),
+hold on,
+b = bar(offset,count_sigma_total,'grouped');
+for i = 1:5
+ b(i).FaceColor = curvecolor{i};
+end
+xticks(offset);
+xticklabels(interval_tag);
+ylim([0,100]);
+yticks(0:20:100);
+xlabel('Credential Intervals of \sigma');
+ylabel('Fraction of True Value in the Intervals (%)');
+title('M','FontSize',12);
+
+figure(14),
+hold on,
+b = bar(offset,count_angle_total,'grouped');
+for i = 1:5
+ b(i).FaceColor = curvecolor{i};
+end
+xticks(offset);
+xticklabels(interval_tag);
+ylim([0,100]);
+yticks(0:20:100);
+xlabel('Credential Intervals of \theta_{pref}');
+ylabel('Fraction of True Value in the Intervals (%)');
+title('N','FontSize',12);
+
+figure(15),
+hold on,
+b = bar(offset,count_rsp_total,'grouped');
+for i = 1:5
+ b(i).FaceColor = curvecolor{i};
+end
+xticks(offset);
+xticklabels(interval_tag);
+ylim([0,100]);
+yticks(0:20:100);
+xlabel('Credential Intervals of C');
+ylabel('Fraction of True Value in the Intervals (%)');
+title('O','FontSize',12);
 %%
-% export figures
-% F4a = figure(1);
-% F4b = figure(2);
-% F4c = figure(3);
-% F4d = figure(4);
-% F4e = figure(5);
-% F4f = figure(6);
-% F4g = figure(7);
-% F4h = figure(8);
-% F4i = figure(9);
-% F4j = figure(10);
-% 
-% path = 'D:\GitHub\vhlab-bayesoridir-matlab\thesis\figures\noise_mdl\kcs\';
-% 
-% exportgraphics(F4a,[path 'Figure_4a_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F4b,[path 'Figure_4b_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F4c,[path 'Figure_4c_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F4d,[path 'Figure_4d_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F4e,[path 'Figure_4e_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F4f,[path 'Figure_4f_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F4g,[path 'Figure_4g_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F4h,[path 'Figure_4h_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F4i,[path 'Figure_4i_kcs_numtrials.pdf'],"ContentType","vector"),
-% exportgraphics(F4j,[path 'Figure_4j_kcs_numtrials.pdf'],"ContentType","vector"),
+%export figures
+F4a = figure(1);
+F4b = figure(2);
+F4c = figure(3);
+F4d = figure(4);
+F4e = figure(5);
+F4f = figure(6);
+F4g = figure(7);
+F4h = figure(8);
+F4i = figure(9);
+F4j = figure(10);
+F4k = figure(11);
+F4l = figure(12);
+F4m = figure(13);
+F4n = figure(14);
+F4o = figure(15);
+
+path = 'D:\GitHub\vhlab-bayesoridir-matlab\Bayes_Estimation_paper\figures\noise_mdl\kcs\';
+
+exportgraphics(F4a,[path 'Figure_4a_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4b,[path 'Figure_4b_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4c,[path 'Figure_4c_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4d,[path 'Figure_4d_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4e,[path 'Figure_4e_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4f,[path 'Figure_4f_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4g,[path 'Figure_4g_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4h,[path 'Figure_4h_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4i,[path 'Figure_4i_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4j,[path 'Figure_4j_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4k,[path 'Figure_4k_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4l,[path 'Figure_4l_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4m,[path 'Figure_4m_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4n,[path 'Figure_4n_mode.pdf'],"ContentType","vector"),
+exportgraphics(F4o,[path 'Figure_4o_mode.pdf'],"ContentType","vector");

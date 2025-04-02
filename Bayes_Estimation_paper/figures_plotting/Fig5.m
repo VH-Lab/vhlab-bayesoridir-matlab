@@ -1,8 +1,8 @@
 clear;close all;clc;
 % Fig 5 - Performance of Bayesian parameter estimation for simulated data
-% of varying orientation tuning.
+% of different number of samples(data angles)
 load my_fig5_mode.mat
-cell_type = 1;
+cell_type = 5;
 experiment_num = 100;
 ang = 0:359;
 %curves parameters
@@ -15,14 +15,14 @@ sigma = 30;
 %%
 % mode and central of 25%, 50% and 75%
 offset = [0.25 0.5 0.75];
-count_rp_total = zeros(numel(offset),cell_num);
+count_rp_total = zeros(numel(offset),cell_type);
 count_alpha_total = count_rp_total;
 count_rsp_total = count_rp_total;
 count_angle_total = count_rp_total;
 count_sigma_total = count_rp_total;
 
 % Get all pdf in output data.
-for i = 1:cell_num
+for i = 1:cell_type
     for j = 1:experiment_num
         idx = (i-1)*experiment_num + j;
         pdf_rp = output{idx}.marginal_likelihood.Rp.likelihoods;
@@ -30,6 +30,7 @@ for i = 1:cell_num
         pdf_rsp = output{idx}.marginal_likelihood.Rsp.likelihoods;
         pdf_angle = output{idx}.marginal_likelihood.theta_pref.likelihoods;
         pdf_orientation_angle = pdf_angle(1:numel(pdf_angle)/2) + pdf_angle((numel(pdf_angle)/2 + 1):end); % combine directional angles to orientational angles
+        pdf_orientation_angle(end+1) = pdf_orientation_angle(1);
         pdf_sigma = output{idx}.marginal_likelihood.sigma.likelihoods;
         
         grid_rp = output{idx}.marginal_likelihood.Rp.values;
