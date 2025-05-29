@@ -21,7 +21,7 @@ classdef TestExpectedErrorRelativeToUniform < matlab.unittest.TestCase
             probabilitiesActual = [0.1; 0.8; 0.1]; % Concentrated at 20
             trueValue = 20;
             
-            expectedRelErr = (28.333333333333332 - 75.0) / 75.0; 
+            expectedRelErr = 28.333333333333332 / 75.0; 
 
             actualRelErr = vis.bayes.assess.expectedErrorRelativeToUniform(values, probabilitiesActual, trueValue);
             testCase.verifyEqual(actualRelErr, expectedRelErr, 'AbsTol', testCase.AbsTol);
@@ -34,7 +34,7 @@ classdef TestExpectedErrorRelativeToUniform < matlab.unittest.TestCase
             probabilitiesActual = [0.4; 0.2; 0.4]; % Concentrated away from 20
             trueValue = 20;
 
-            expectedRelErr = (88.33333333333333 - 75.0) / 75.0; 
+            expectedRelErr = 88.33333333333333 / 75.0; 
 
             actualRelErr = vis.bayes.assess.expectedErrorRelativeToUniform(values, probabilitiesActual, trueValue);
             testCase.verifyEqual(actualRelErr, expectedRelErr, 'AbsTol', testCase.AbsTol);
@@ -46,7 +46,7 @@ classdef TestExpectedErrorRelativeToUniform < matlab.unittest.TestCase
             values = [10];
             probabilitiesActual = [1];
             trueValue = 10;
-            expectedRelErr = 0; 
+            expectedRelErr = 1; 
 
             actualRelErr = vis.bayes.assess.expectedErrorRelativeToUniform(values, probabilitiesActual, trueValue);
             testCase.verifyEqual(actualRelErr, expectedRelErr, 'AbsTol', testCase.AbsTol);

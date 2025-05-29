@@ -8,7 +8,7 @@ function relErr = expectedErrorRelativeToUniform(values, probabilities, trueValu
 %   Calculates the expected squared error (ESE) of a given probability
 %   distribution and compares it to the ESE of a uniform distribution
 %   defined over the same 'values'. The result is the relative difference:
-%   (ESE_actual - ESE_uniform) / ESE_uniform.
+%   ESE_actual / ESE_uniform.
 %
 %   The function uses 'vis.bayes.assess.expectedSquaredError' as a helper
 %   to compute both the ESE for the provided 'probabilities' (ESE_actual)
@@ -32,7 +32,7 @@ function relErr = expectedErrorRelativeToUniform(values, probabilities, trueValu
 %
 %   Outputs:
 %       relErr (1,1) double
-%           The relative error: (ESE_actual - ESE_uniform) / ESE_uniform.
+%           The relative error: ESE_actual / ESE_uniform.
 %           - Returns 0 if ESE_uniform is near zero and ESE_actual is also near zero.
 %           - Throws an error if ESE_uniform is near zero but ESE_actual is not.
 %           - Throws an error if either ESE calculation fails or results in NaN.
@@ -45,18 +45,18 @@ function relErr = expectedErrorRelativeToUniform(values, probabilities, trueValu
 %       vals = [10; 20; 30];
 %       probsActual = [0.1; 0.8; 0.1]; tv = 20;
 %       relErr1 = vis.bayes.assess.expectedErrorRelativeToUniform(vals, probsActual, tv);
-%       % Expected relErr1 approx -0.8846
+%       % Expected relErr1 approx 0.3778
 %
 %   Example 2: Actual distribution is worse than uniform
 %       vals = [10; 20; 30];
 %       probsActual = [0.4; 0.2; 0.4]; tv = 20;
 %       relErr2 = vis.bayes.assess.expectedErrorRelativeToUniform(vals, probsActual, tv);
-%       % Expected relErr2 approx 0.4615
+%       % Expected relErr2 approx 1.1778
 %
 %   Example 3: Single point (Actual and Uniform are effectively the same)
 %       vals = [10]; probsActual = [1]; tv = 10;
 %       relErr3 = vis.bayes.assess.expectedErrorRelativeToUniform(vals, probsActual, tv);
-%       % Expected relErr3 = 0
+%       % Expected relErr3 = 1
 
     arguments
         values (:,1) {mustBeNumeric, mustBeReal, mustBeFinite, mustBeVector, ...
@@ -119,7 +119,7 @@ function relErr = expectedErrorRelativeToUniform(values, probabilities, trueValu
         end
     else
         % Standard calculation
-        relErr = (eseActual - eseUniform) / eseUniform;
+        relErr = eseActual / eseUniform;
     end
 
 end

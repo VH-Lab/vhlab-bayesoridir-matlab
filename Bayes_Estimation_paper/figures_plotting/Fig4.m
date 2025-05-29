@@ -13,7 +13,14 @@ alpha = rn./rp;
 rsp = 0;
 angle = 45;
 sigma = 30;
+
 %%
+% ESE relative to a uniform distribution
+relErr_rp = zeros(experiment_num,cell_type);
+relErr_alpha = relErr_rp;
+relErr_rsp = relErr_rp;
+relErr_angle = relErr_rp;
+relErr_sigma = relErr_rp;
 % mode and central of 25%, 50% and 75%
 offset = [0.25 0.5 0.75];
 count_rp_total = zeros(numel(offset),cell_type);
@@ -41,6 +48,15 @@ for i = 1:cell_type
         grid_orientation_angle = output(idx).marginal_likelihood.theta_pref.values(1:numel(pdf_orientation_angle));
         grid_sigma = output(idx).marginal_likelihood.sigma.values;
 
+        % ESE relative to a uniform distribution
+        relErr_rp(j,i) = vis.bayes.assess.expectedErrorRelativeToUniform(grid_rp,pdf_rp,rp);
+        relErr_alpha(j,i) = vis.bayes.assess.expectedErrorRelativeToUniform(grid_alpha,pdf_alpha,alpha(i));
+        relErr_rsp(j,i) = vis.bayes.assess.expectedErrorRelativeToUniform(grid_rsp,pdf_rsp,rsp);
+        relErr_angle(j,i) = vis.bayes.assess.expectedErrorRelativeToUniform(grid_angle,pdf_angle,angle);
+        relErr_sigma(j,i) = vis.bayes.assess.expectedErrorRelativeToUniform(grid_sigma,pdf_sigma,sigma);
+        
+
+        % in x% pertentile statistic
         [rp_bound,count_rp] = analysis.in_boundaries(grid_rp,pdf_rp,rp,offset); % Define offsets = 0.25, 0.5 and 0.75 of the central intervals
         [alpha_bound,count_alpha] = analysis.in_boundaries(grid_alpha,pdf_alpha,alpha(i),offset);
         [rsp_bound,count_rsp] = analysis.in_boundaries(grid_rsp,pdf_rsp,rsp,offset);
