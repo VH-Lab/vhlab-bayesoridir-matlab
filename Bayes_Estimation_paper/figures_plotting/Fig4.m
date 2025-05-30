@@ -1,5 +1,5 @@
 clear;close;clc;
-load my_fig4_mode.mat
+load my_fig4_trial15.mat
 % Fig 4 - Performance of Bayesian parameter estimation for simulated data
 % of varying direction tuning(DI).
 
@@ -14,13 +14,55 @@ rsp = 0;
 angle = 45;
 sigma = 30;
 
-%%
 % ESE relative to a uniform distribution
 relErr_rp = zeros(experiment_num,cell_type);
 relErr_alpha = relErr_rp;
 relErr_rsp = relErr_rp;
 relErr_angle = relErr_rp;
 relErr_sigma = relErr_rp;
+
+% centralPercentile2 prompt
+percentiles = [25 50 75];
+count_rp_total = zeros(numel(percentiles),cell_type);
+count_alpha_total = count_rp_total;
+count_rsp_total = count_rp_total;
+count_angle_total = count_rp_total;
+count_sigma_total = count_rp_total;
+% Get all pdf in output data.
+
+for i = 1:cell_type
+    for j = 1:experiment_num
+        idx = (i-1)*experiment_num + j;
+        pdf_rp = output(idx).marginal_likelihood.Rp.likelihoods;
+        pdf_alpha = output(idx).marginal_likelihood.Alpha.likelihoods;
+        pdf_rsp = output(idx).marginal_likelihood.Rsp.likelihoods;
+        pdf_angle = output(idx).marginal_likelihood.theta_pref.likelihoods;
+        pdf_sigma = output(idx).marginal_likelihood.sigma.likelihoods;
+
+        grid_rp = output(idx).marginal_likelihood.Rp.values;
+        grid_alpha = output(idx).marginal_likelihood.Alpha.values;
+        grid_rsp = output(idx).marginal_likelihood.Rsp.values;
+        grid_angle = output(idx).marginal_likelihood.theta_pref.values;
+        grid_sigma = output(idx).marginal_likelihood.sigma.values;
+
+        count_rp = isInCentralPercentile2(grid_rp,pdf_rp,rp,percentiles,"PlotType","pdf");
+        count_alpha = isInCentralPercentile2(grid_alpha,pdf_alpha,alpha(i),percentiles);
+        count_rsp = isInCentralPercentile2(grid_rsp,pdf_rsp,rsp,percentiles);
+        count_angle = checkDirectionInOrientationPercentile(grid_angle,pdf_angle,angle,percentiles);
+        count_sigma = isInCentralPercentile2(grid_sigma,pdf_sigma,sigma,percentiles);
+        count_rp_total(:,i) = count_rp_total(:,i) + count_rp(:);
+        count_alpha_total(:,i) = count_alpha_total(:,i) + count_alpha(:);
+        count_rsp_total(:,i) = count_rsp_total(:,i) + count_rsp(:);
+        count_angle_total(:,i) = count_angle_total(:,i) + count_angle(:);
+        count_sigma_total(:,i) = count_sigma_total(:,i) + count_sigma(:);
+    end
+end
+fraction_rp1 = count_rp_total / experiment_num;
+fraction_alpha1 = count_alpha_total / experiment_num;
+fraction_rsp1 = count_rsp_total / experiment_num;
+fraction_angle1 = count_angle_total / experiment_num;
+fraction_sigma1 = count_sigma_total / experiment_num;
+
 % mode and central of 25%, 50% and 75%
 offset = [0.25 0.5 0.75];
 count_rp_total = zeros(numel(offset),cell_type);
@@ -87,11 +129,11 @@ for i = 1:cell_type
 end
     % Get fraction that 'true' value sit in the central intervals
 
-    fraction_rp = count_rp_total / experiment_num;
-    fraction_alpha = count_alpha_total / experiment_num;
-    fraction_rsp = count_rsp_total / experiment_num;
-    fraction_angle = count_angle_total / experiment_num;
-    fraction_sigma = count_sigma_total / experiment_num;
+    fraction_rp2 = count_rp_total / experiment_num;
+    fraction_alpha2 = count_alpha_total / experiment_num;
+    fraction_rsp2 = count_rsp_total / experiment_num;
+    fraction_angle2 = count_angle_total / experiment_num;
+    fraction_sigma2 = count_sigma_total / experiment_num;
 
     % plot cdf example curve
     % figure(11),
@@ -129,7 +171,48 @@ end
     % plot(cdf_sigma_total,0:0.01:1,'k.')
     % hold off;
 
+%%
+% HPD prompt
+percentiles = [25 50 75];
+count_rp_total = zeros(numel(percentiles),cell_type);
+count_alpha_total = count_rp_total;
+count_rsp_total = count_rp_total;
+count_angle_total = count_rp_total;
+count_sigma_total = count_rp_total;
+% Get all pdf in output data.
 
+for i = 1:cell_type
+    for j = 1:experiment_num
+        idx = (i-1)*experiment_num + j;
+        pdf_rp = output(idx).marginal_likelihood.Rp.likelihoods;
+        pdf_alpha = output(idx).marginal_likelihood.Alpha.likelihoods;
+        pdf_rsp = output(idx).marginal_likelihood.Rsp.likelihoods;
+        pdf_angle = output(idx).marginal_likelihood.theta_pref.likelihoods;
+        pdf_sigma = output(idx).marginal_likelihood.sigma.likelihoods;
+
+        grid_rp = output(idx).marginal_likelihood.Rp.values;
+        grid_alpha = output(idx).marginal_likelihood.Alpha.values;
+        grid_rsp = output(idx).marginal_likelihood.Rsp.values;
+        grid_angle = output(idx).marginal_likelihood.theta_pref.values;
+        grid_sigma = output(idx).marginal_likelihood.sigma.values;
+
+count_rp = IsInMostLikelyNPercent(grid_rp,pdf_rp,rp,percentiles);
+count_alpha = IsInMostLikelyNPercent(grid_alpha,pdf_alpha,alpha(i),percentiles);
+count_rsp = IsInMostLikelyNPercent(grid_rsp,pdf_rsp,rsp,percentiles);
+count_angle = IsInMostLikelyNPercent(grid_angle,pdf_angle,angle,percentiles);
+count_sigma = IsInMostLikelyNPercent(grid_sigma,pdf_sigma,sigma,percentiles);
+        count_rp_total(:,i) = count_rp_total(:,i) + count_rp(:);
+        count_alpha_total(:,i) = count_alpha_total(:,i) + count_alpha(:);
+        count_rsp_total(:,i) = count_rsp_total(:,i) + count_rsp(:);
+        count_angle_total(:,i) = count_angle_total(:,i) + count_angle(:);
+        count_sigma_total(:,i) = count_sigma_total(:,i) + count_sigma(:);
+    end
+end
+    fraction_rp3 = count_rp_total / experiment_num;
+    fraction_alpha3 = count_alpha_total / experiment_num;
+    fraction_rsp3 = count_rsp_total / experiment_num;
+    fraction_angle3 = count_angle_total / experiment_num;
+    fraction_sigma3 = count_sigma_total / experiment_num;
 %%
 % calculate the 'true DI value' from all 50 simulated curves.
 true_di = (rp - rn).*(1 - exp(-0.5*180^2./sigma^2))./(rsp + rp + rn.*exp(-0.5.*180^2./sigma^2));
@@ -156,6 +239,7 @@ ylabel('Response(Hz)','FontSize',10),
 legend('Ideal','+50% Noise','Bayes Estimation','FontSize',7),
 title(titlename{i},'FontSize',12);
 end
+
 %%
 % create plotting edges(n+1) and center(n) N = curves number
 edges = 0:0.05:1;

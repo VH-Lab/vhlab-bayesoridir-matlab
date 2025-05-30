@@ -18,7 +18,55 @@ parameters1 = data.generate_fixed_parameters(rp(i),rn(i),45,30,rsp(i));
 end
 true_oi = 1 - (2.*rsp + 2.*(rp + rn).*exp(-0.5*90^2/30^2))./(2.*rsp + (rp + rn).*(1 + exp(-0.5*180^2/30^2)));
 
-load my_fig3_mode.mat
+load my_fig3_trial5_fineRp.mat
+%%
+% centralPercentile2 prompt
+percentiles = [25 50 75];
+count_rp_total = zeros(numel(percentiles),cell_type);
+count_alpha_total = count_rp_total;
+count_rsp_total = count_rp_total;
+count_angle_total = count_rp_total;
+count_sigma_total = count_rp_total;
+% Get all pdf in output data.
+
+for i = 1:cell_type
+    for j = 1:experiment_num
+        idx = (i-1)*experiment_num + j;
+        pdf_rp = output(idx).marginal_likelihood.Rp.likelihoods;
+        pdf_alpha = output(idx).marginal_likelihood.Alpha.likelihoods;
+        pdf_rsp = output(idx).marginal_likelihood.Rsp.likelihoods;
+        pdf_angle = output(idx).marginal_likelihood.theta_pref.likelihoods;
+        pdf_sigma = output(idx).marginal_likelihood.sigma.likelihoods;
+
+        grid_rp = output(idx).marginal_likelihood.Rp.values;
+        grid_alpha = output(idx).marginal_likelihood.Alpha.values;
+        grid_rsp = output(idx).marginal_likelihood.Rsp.values;
+        grid_angle = output(idx).marginal_likelihood.theta_pref.values;
+        grid_sigma = output(idx).marginal_likelihood.sigma.values;
+
+        count_rp = isInCentralPercentile2(grid_rp,pdf_rp,rp(i),percentiles);
+        count_alpha = isInCentralPercentile2(grid_alpha,pdf_alpha,alpha(i),percentiles);
+        count_rsp = isInCentralPercentile2(grid_rsp,pdf_rsp,rsp(i),percentiles);
+        count_angle = checkDirectionInOrientationPercentile(grid_angle,pdf_angle,angle,percentiles);
+        count_sigma = isInCentralPercentile2(grid_sigma,pdf_sigma,sigma,percentiles);
+        count_rp_total(:,i) = count_rp_total(:,i) + count_rp(:);
+        count_alpha_total(:,i) = count_alpha_total(:,i) + count_alpha(:);
+        count_rsp_total(:,i) = count_rsp_total(:,i) + count_rsp(:);
+        count_angle_total(:,i) = count_angle_total(:,i) + count_angle(:);
+        count_sigma_total(:,i) = count_sigma_total(:,i) + count_sigma(:);
+    end
+end
+fraction_rp1 = count_rp_total / experiment_num;
+fraction_alpha1 = count_alpha_total / experiment_num;
+fraction_rsp1 = count_rsp_total / experiment_num;
+fraction_angle1 = count_angle_total / experiment_num;
+fraction_sigma1 = count_sigma_total / experiment_num;
+%%
+writematrix(fraction_rp1,'Fig3_trials_5_fineRp.xlsx','Sheet','rp')
+writematrix(fraction_alpha1,'Fig3_trials_5_fineRp.xlsx','Sheet','alpha')
+writematrix(fraction_rsp1,'Fig3_trials_5_fineRp.xlsx','Sheet','rsp')
+writematrix(fraction_angle1,'Fig3_trials_5_fineRp.xlsx','Sheet','angle')
+writematrix(fraction_sigma1,'Fig3_trials_5_fineRp.xlsx','Sheet','sigma')
 %%
 % ESE relative to a uniform distribution
 relErr_rp = zeros(experiment_num,cell_type);
@@ -71,21 +119,6 @@ for i = 1:cell_type
         count_rsp_total(:,i) = count_rsp_total(:,i) + count_rsp(:);
         count_angle_total(:,i) = count_angle_total(:,i) + count_angle(:);
         count_sigma_total(:,i) = count_sigma_total(:,i) + count_sigma(:);
-        % Calculate alpha interval boundaries
-        % Include the boundary effect when the lower or upper interval boundary
-        % hit the edge of cdf.
-
-        % Calculate rsp interval boundaries
-        % Include the boundary effect when the lower or upper interval boundary
-        % hit the edge of cdf.
-
-        % Calculate angle interval boundaries
-        % Include the boundary effect when the lower or upper interval boundary
-        % hit the edge of cdf.
-
-        % Calculate sigma interval boundaries
-        % Include the boundary effect when the lower or upper interval boundary
-        % hit the edge of cdf.
     end
 end
     % Get fraction that 'true' value sit in the central intervals
@@ -137,8 +170,8 @@ titlename = {'A','B','C','D','E'};
 for i = 1:5
 figure(i),hold on;
 plot(data_ideal{i}.angles,data_ideal{i}.responses,'Color',curvecolor{i},'LineWidth',1)
-errorbar(data_noisy{i}(50).angles,data_noisy{i}(50).mean_responses,data_noisy{i}(50).responses_stderr,'*','Color','#A2142F','MarkerSize',7)
-plot(0:359,output(i*100-50).maximum_likelihood.parameters.tunning_curve,'k','LineWidth',1)
+errorbar(data_noisy{i}(58).angles,data_noisy{i}(58).mean_responses,data_noisy{i}(58).responses_stderr,'*','Color','#A2142F','MarkerSize',7)
+plot(0:359,output(i*100-42).maximum_likelihood.parameters.tunning_curve,'k','LineWidth',1)
 xlim([-5,365]),
 ylim([-.5,20]),
 xticks(0:100:300),
