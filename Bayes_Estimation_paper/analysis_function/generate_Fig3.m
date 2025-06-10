@@ -2,7 +2,7 @@ clear,clc,close all;
 % test1 - prediction of different OI value
 %simulated 'true' various curves / single curve
 cell_type = 5;
-measurement_num = 5;
+measurement_num = 15;
 experiment_num = 100;
 ang = 0:45:359;
 %curves parameters
@@ -43,11 +43,11 @@ figure(),
 noise_mdl = vis.bayes.noise.fit_proportional_noise_plus_c(m,v,1);
 %%
 % bayes grid input
-I = struct('Rp',linspace(0,20,81), ...
+I = struct('Rp',linspace(0,20,41), ...
     'Op',0:5:359, ...
-    'Alpha',linspace(0,1,31), ...
-    'Sig',linspace(1,60,41), ...
-    'Rsp',linspace(0,10,41));
+    'Alpha',linspace(0,1,41), ...
+    'Sig',linspace(1,60,60), ...
+    'Rsp',linspace(-10,10,41));
 %%
 % bayes fitting
 tic
