@@ -5,7 +5,7 @@ clear;close all;clc;
 % Example cells - Trial 5: cell 15
 %                 Trial 10: cell 10
 %                 Trial 15: cell 1
-load my_fig4_trial15.mat
+load my_fig4_trial5.mat
 cell_type = numel(data_ideal);
 measurement_num = data_mean{1}(1).num_trials;
 experiment_num = numel(data_mean{1});
@@ -93,7 +93,7 @@ true_di = (rp - rn).*(1 - exp(-0.5*180^2./sigma^2))./(rsp + rp + rn.*exp(-0.5.*1
 
 curvecolor = {'#0072BD','#77AC30','#EDB120','#7E2F8E','#D95319'};
 titlename = {'A','B','C','D','E'};
-cell_num = 1;
+cell_num = 15;
 
 for i = 1:5
 figure(i),hold on;
@@ -172,7 +172,7 @@ for i = 1:5
 plot(output((i-1)*100+cell_num).marginal_likelihood.Rsp.values,output((i-1)*100+cell_num).marginal_likelihood.Rsp.likelihoods,'Color',curvecolor{i},'LineWidth',1),
 end
 ylim([-0.02,1]),
-xticks(0:2:10),
+xticks(-10:2:10),
 yticks(0:.2:1),
 set(gca,'FontSize',8),
 xlabel('C','FontSize',10),
@@ -380,7 +380,7 @@ xlabel('C', 'FontSize', 10);
 %%
 % file fraction data
 path = 'D:\GitHub\vhlab-bayesoridir-matlab\Bayes_Estimation_paper\need to check\';
-doc_name = 'Fig4_trials_15.xlsx';
+doc_name = 'Fig4_trials_5.xlsx';
 writematrix(fraction_rp,[path doc_name],'Sheet','rp')
 writematrix(fraction_alpha,[path doc_name],'Sheet','alpha')
 writematrix(fraction_rsp,[path doc_name],'Sheet','rsp')
@@ -389,7 +389,7 @@ writematrix(fraction_sigma,[path doc_name],'Sheet','sigma')
 %%
 % file relErr data
 path = 'D:\GitHub\vhlab-bayesoridir-matlab\Bayes_Estimation_paper\need to check\';
-doc_name = 'Fig4_trials_15_relErr.xlsx';
+doc_name = 'Fig4_trials_5_relErr.xlsx';
 writematrix(relErr_rp,[path doc_name],'Sheet','rp')
 writematrix(relErr_alpha,[path doc_name],'Sheet','alpha')
 writematrix(relErr_rsp,[path doc_name],'Sheet','rsp')
@@ -419,7 +419,7 @@ F4s = figure(19);
 F4t = figure(20);
 
 path = 'D:\GitHub\vhlab-bayesoridir-matlab\Bayes_Estimation_paper\figures\noise_mdl\kcs\';
-suffix = 'trial15.pdf';
+suffix = 'trial5.pdf';
 
 exportgraphics(F4a,[path 'Figure_4a_' suffix],"ContentType","vector"),
 exportgraphics(F4b,[path 'Figure_4b_' suffix],"ContentType","vector"),
@@ -436,8 +436,8 @@ exportgraphics(F4l,[path 'Figure_4l_' suffix],"ContentType","vector"),
 exportgraphics(F4m,[path 'Figure_4m_' suffix],"ContentType","vector"),
 exportgraphics(F4n,[path 'Figure_4n_' suffix],"ContentType","vector"),
 exportgraphics(F4o,[path 'Figure_4o_' suffix],"ContentType","vector");
-exportgraphics(F4p,[path 'Figure_3p_' suffix],"ContentType","vector"),
-exportgraphics(F4q,[path 'Figure_3q_' suffix],"ContentType","vector"),
-exportgraphics(F4r,[path 'Figure_3r_' suffix],"ContentType","vector"),
-exportgraphics(F4s,[path 'Figure_3s_' suffix],"ContentType","vector"),
-exportgraphics(F4t,[path 'Figure_3t_' suffix],"ContentType","vector");
+exportgraphics(F4p,[path 'Figure_4p_' suffix],"ContentType","vector"),
+exportgraphics(F4q,[path 'Figure_4q_' suffix],"ContentType","vector"),
+exportgraphics(F4r,[path 'Figure_4r_' suffix],"ContentType","vector"),
+exportgraphics(F4s,[path 'Figure_4s_' suffix],"ContentType","vector"),
+exportgraphics(F4t,[path 'Figure_4t_' suffix],"ContentType","vector");
